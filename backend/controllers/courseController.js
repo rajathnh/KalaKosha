@@ -31,11 +31,59 @@ const createCourse = async (req, res) => {
 
 // --- GET ALL COURSES (Public) ---
 const getAllCourses = async (req, res) => {
-  const courses = await Course.find({}).populate({
-    path: 'artist',
-    select: 'name profilePicture', // Keep the list view lightweight
-  });
-  res.status(StatusCodes.OK).json({ courses, count: courses.length });
+    const { search, artForm, difficulty, sort } = req.query;
+
+    const queryObject = {};
+
+    // Searching by keyword in title or description
+    if (search) {
+        queryObject.$or = [
+            { title: { $regex: search, $options: 'i' } },
+            { description: { $regex: search, $options: 'i' } }
+        ];
+    }
+    // Filtering by art form
+    if (artForm && artForm !== 'all') {
+        queryObject.artForm = artForm;
+    }
+    // Filtering by difficulty
+    if (difficulty && difficulty !== 'all') {
+        queryObject.difficulty = difficulty;
+    }
+
+    let result = Course.find(queryObject).populate({
+        path: 'artist',
+        select: 'name profilePicture',
+    });
+
+    // Sorting logic
+    if (sort === 'latest') {
+        result = result.sort('-createdAt');
+    }
+    if (sort === 'oldest') {
+        result = result.sort('createdAt');
+    }
+    if (sort === 'price-lowest') {
+        result = result.sort('price');
+    }
+    if (sort === 'price-highest') {
+        result = result.sort('-price');
+    }
+
+    // Pagination logic
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    result = result.skip(skip).limit(limit);
+
+    const courses = await result;
+
+    // Get total count for frontend pagination
+    const totalCourses = await Course.countDocuments(queryObject);
+    const numOfPages = Math.ceil(totalCourses / limit);
+
+    res.status(StatusCodes.OK).json({ courses, count: courses.length, totalCourses, numOfPages });
 };
 
 // --- GET SINGLE COURSE (Public) ---

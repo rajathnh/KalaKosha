@@ -34,7 +34,9 @@ const blogPostRouter = require('./routes/blogPostRoutes');
 const artistRouter = require('./routes/artistRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const chatRouter = require('./routes/chatRoutes');
-
+const commissionRouter = require('./routes/commissionRoutes');
+const userRouter = require('./routes/userRoutes');
+const commissionReviewRouter = require('./routes/commissionReviewRoutes');
 
 // --- Middleware Imports ---
 const notFoundMiddleware = require("./middleware/not-found");
@@ -81,7 +83,9 @@ app.use('/api/v1/blog', blogPostRouter);
 app.use('/api/v1/artists', artistRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/chat', chatRouter);
-
+app.use('/api/v1/commissions', commissionRouter);
+app.use('/api/v1/users', userRouter);
+app.use('/api/v1/commission-reviews', commissionReviewRouter);
 
 // --- Custom Error Handling Middleware (must be last) ---
 app.use(notFoundMiddleware);

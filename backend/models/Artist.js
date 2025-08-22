@@ -55,6 +55,14 @@ const ArtistSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    averageRating: {
+  type: Number,
+  default: 0,
+},
+numOfReviews: {
+  type: Number,
+  default: 0,
+},
   },
   { timestamps: true }
 );

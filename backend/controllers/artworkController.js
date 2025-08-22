@@ -32,11 +32,55 @@ const createArtwork = async (req, res) => {
 
 // --- GET ALL ARTWORKS (Public) ---
 const getAllArtworks = async (req, res) => {
-  const artworks = await Artwork.find({}).populate({
+  const { search, artForm, sort } = req.query;
+
+  const queryObject = {};
+
+  if (search) {
+    // Search by title or description (case-insensitive)
+    queryObject.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } }
+    ];
+  }
+  
+  if (artForm && artForm !== 'all') {
+    queryObject.artForm = artForm;
+  }
+
+  let result = Artwork.find(queryObject).populate({
     path: 'artist',
-    select: 'name profilePicture', // Only show artist's name and picture
+    select: 'name profilePicture',
   });
-  res.status(StatusCodes.OK).json({ artworks, count: artworks.length });
+
+  // Sorting
+  if (sort === 'latest') {
+    result = result.sort('-createdAt');
+  }
+  if (sort === 'oldest') {
+    result = result.sort('createdAt');
+  }
+  if (sort === 'price-lowest') {
+    result = result.sort('price');
+  }
+  if (sort === 'price-highest') {
+    result = result.sort('-price');
+  }
+
+  // Pagination
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 12; // 12 items per page
+  const skip = (page - 1) * limit;
+
+  result = result.skip(skip).limit(limit);
+
+  const artworks = await result;
+
+  // Get total count for pagination on the frontend
+  const totalArtworks = await Artwork.countDocuments(queryObject);
+  const numOfPages = Math.ceil(totalArtworks / limit);
+
+  res.status(StatusCodes.OK).json({ artworks, count: artworks.length, totalArtworks, numOfPages });
 };
 
 // --- GET SINGLE ARTWORK (Public) ---

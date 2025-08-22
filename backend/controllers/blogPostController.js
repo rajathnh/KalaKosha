@@ -34,12 +34,49 @@ const createBlogPost = async (req, res) => {
 
 // --- GET ALL BLOG POSTS (Public) ---
 const getAllBlogPosts = async (req, res) => {
-  // Sort by newest first
-  const blogPosts = await BlogPost.find({}).sort('-createdAt').populate({
-    path: 'artist',
-    select: 'name profilePicture',
-  });
-  res.status(StatusCodes.OK).json({ blogPosts, count: blogPosts.length });
+    const { search, tags, sort } = req.query;
+
+    const queryObject = {};
+
+    // Searching by keyword in title or content
+    if (search) {
+        queryObject.$or = [
+            { title: { $regex: search, $options: 'i' } },
+            { content: { $regex: search, $options: 'i' } }
+        ];
+    }
+    // Filtering by a specific tag
+    if (tags) {
+        // This finds posts that include the specified tag in their tags array
+        queryObject.tags = tags;
+    }
+
+    let result = BlogPost.find(queryObject).populate({
+        path: 'artist',
+        select: 'name profilePicture',
+    });
+
+    // Sorting logic (most common for blogs is by date)
+    if (sort === 'latest' || !sort) { // Default to latest
+        result = result.sort('-createdAt');
+    }
+    if (sort === 'oldest') {
+        result = result.sort('createdAt');
+    }
+
+    // Pagination logic
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    result = result.skip(skip).limit(limit);
+
+    const blogPosts = await result;
+
+    const totalBlogPosts = await BlogPost.countDocuments(queryObject);
+    const numOfPages = Math.ceil(totalBlogPosts / limit);
+
+    res.status(StatusCodes.OK).json({ blogPosts, count: blogPosts.length, totalBlogPosts, numOfPages });
 };
 
 // --- GET SINGLE BLOG POST (Public) ---
