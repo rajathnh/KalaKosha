@@ -47,7 +47,7 @@ const Contact = () => {
           <div className="contact-right">
             <div className="contact-image">
               <img 
-                src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'><rect width='400' height='500' fill='%23f0f0f0'/><rect x='100' y='100' width='200' height='300' fill='%23d2691e' opacity='0.8'/><circle cx='200' cy='150' r='40' fill='%23b68d40'/><rect x='120' y='200' width='160' height='80' fill='%23a66321'/><rect x='140' y='300' width='120' height='60' fill='%236b3e1d'/><text x='200' y='480' text-anchor='middle' font-family='Arial' font-size='12' fill='%23666'>Heritage Sculpture</text></svg>" 
+                src='../../public/contact.jpg'
                 alt="Indian Heritage Sculpture"
               />
             </div>

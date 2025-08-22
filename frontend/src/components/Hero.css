@@ -3,7 +3,7 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  margin-top: 80px; /* Account for fixed navbar */
+  margin-top: 60px; 
 }
 
 .hero-background {

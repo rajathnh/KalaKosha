@@ -12,8 +12,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  max-width: 1200px;
+  padding: 0.8rem 1rem;
+  max-width: 1350px;
   margin: 0 auto;
 }
 
@@ -24,7 +24,14 @@
 }
 
 .navbar-logo {
-  width: 50px;
+  height:45px;
+  display:flex;
+  justify-self:center;
+  align-items: center;
+}
+
+.logo-image {
+  width: 45px;
   height: 40px;
   background-image: url('../../public/logo.png');
   background-size: cover;
@@ -32,7 +39,12 @@
   background-repeat: no-repeat;
   border-radius: 50%;
 }
-
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-left: 0.5rem;
+}
 .navbar-menu {
   display: flex;
   gap: 2rem;
@@ -45,7 +57,7 @@
 }
 
 .navbar-menu a:hover {
-  color: var(--accent-color);
+  color: #ccb792;
   transform: translateY(-2px);
 }
 
