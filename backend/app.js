@@ -64,7 +64,7 @@ app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 app.use(
   rateLimiter({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 200, 
+    max: 1000, 
   })
 );
 

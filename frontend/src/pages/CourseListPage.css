@@ -1,0 +1,98 @@
+/* src/pages/CourseListPage.css */
+.course-list-page .page-title,
+.course-list-page .page-subtitle {
+  text-align: center;
+}
+
+.course-list-page .page-title {
+  margin-bottom: 1rem;
+}
+.course-list-page .page-subtitle {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.course-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-medium);
+}
+
+.course-card-image {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+
+.course-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-card-difficulty {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.course-card-info {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-card-info h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  flex-grow: 1; /* Pushes footer to the bottom */
+}
+
+.course-artist {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.course-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 1rem;
+}
+
+.course-card-rating {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.course-card-price {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}

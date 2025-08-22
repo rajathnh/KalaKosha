@@ -87,16 +87,25 @@ const getAllCourses = async (req, res) => {
 };
 
 // --- GET SINGLE COURSE (Public) ---
+// In backend/controllers/courseController.js
+
 const getSingleCourse = async (req, res) => {
   const { id: courseId } = req.params;
-  const course = await Course.findOne({ _id: courseId }).populate({
-    path: 'artist',
-    select: 'name profilePicture bio specialization', // Show more artist details
-  });
+  console.log(`Fetching course with ID: ${courseId}`); // Debugging log
+
+  // We find the course first, without populating
+  const course = await Course.findOne({ _id: courseId });
 
   if (!course) {
+    console.log(`Course not found for ID: ${courseId}`); // Debugging log
     throw new CustomError.NotFoundError(`No course with id: ${courseId}`);
   }
+  
+  // Now we explicitly populate the artist
+  // This helps isolate if the error is in findOne or populate
+  await course.populate('artist');
+
+  console.log(`Successfully fetched and populated course:`, course); // Debugging log
   res.status(StatusCodes.OK).json({ course });
 };
 

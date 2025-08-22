@@ -1,0 +1,78 @@
+/* src/pages/CheckoutPage.css */
+.checkout-page h1 {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.checkout-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.order-details, .payment-summary {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: var(--shadow-light);
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.item-thumbnail {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.item-info h3 {
+  margin-bottom: 0.5rem;
+}
+.item-info p {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.item-price {
+  margin-left: auto;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.payment-summary h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.summary-row.total {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-top: 1rem;
+}
+
+.btn-block {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .checkout-layout {
+    grid-template-columns: 1fr;
+  }
+}

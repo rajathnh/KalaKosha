@@ -11,7 +11,24 @@ export const AuthProvider = ({ children }) => {
 
   // You can keep this commented out for now
   // useEffect(() => { ... }, []);
-
+  useEffect(() => {
+    console.log("AuthContext: Starting initial user check...");
+    const checkCurrentUser = async () => {
+      try {
+        const response = await apiClient.get('/users/me');
+        console.log("AuthContext: User found", response.data.user);
+        setUser(response.data.user);
+      } catch (error) {
+        console.log("AuthContext: No active session found.");
+        setUser(null);
+      } finally {
+        // This block is GUARANTEED to run after the try/catch.
+        console.log("AuthContext: Finished initial check, setting loading to false.");
+        setLoading(false);
+      }
+    };
+    checkCurrentUser();
+  }, []); 
   const login = async (email, password) => {
     try {
       const response = await apiClient.post('/auth/login', { email, password });

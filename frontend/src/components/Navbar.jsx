@@ -62,6 +62,7 @@ const Navbar = () => {
             <a href="#contact" onClick={() => scrollToSection('contact')}>Contact</a>
             {/* MERGED: Explore Art is a Link to a separate page */}
             <Link to="/artworks">Explore Art</Link>
+            <Link to="/courses">Courses</Link>
           </div>
         </div>
 

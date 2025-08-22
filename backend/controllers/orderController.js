@@ -5,8 +5,9 @@ const Artwork = require('../models/Artwork');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const { checkPermissions } = require('../utils');
-
-
+const Course = require('../models/Course');
+const Enrollment = require('../models/Enrollment');
+const Review = require('../models/Review'); 
 // --- (ADMIN ONLY) GET ALL ORDERS ---
 const getAllOrders = async (req, res) => {
     const orders = await Order.find({});
@@ -107,11 +108,49 @@ const createOrder = async (req, res) => {
     
     res.status(StatusCodes.CREATED).json({ order });
 };
+// In backend/controllers/orderController.js
 
+const checkPurchaseStatus = async (req, res) => {
+    const { productId, productType } = req.params;
+    const { userId } = req.user;
+
+    let hasPurchased = false;
+    let hasReviewed = false;
+
+    // 1. Check for purchase first
+    const userOrders = await Order.find({ user: userId, status: { $in: ['paid', 'delivered'] } });
+    if (userOrders.length > 0) {
+        const orderIds = userOrders.map(order => order._id);
+        const orderItem = await OrderItem.findOne({ 
+            order: { $in: orderIds },
+            product: productId,
+            onModel: productType,
+        });
+        if (orderItem) {
+            hasPurchased = true;
+        }
+    }
+
+    // 2. If they have purchased, now check if they have also reviewed
+    if (hasPurchased) {
+        const existingReview = await Review.findOne({
+            user: userId,
+            reviewable: productId,
+            onModel: productType,
+        });
+        if (existingReview) {
+            hasReviewed = true;
+        }
+    }
+
+    // 3. Return both statuses
+    res.status(StatusCodes.OK).json({ hasPurchased, hasReviewed });
+};
 // We export all functions now
 module.exports = {
     getAllOrders,
     getSingleOrder,
     getCurrentUserOrders,
     createOrder,
+    checkPurchaseStatus
 };

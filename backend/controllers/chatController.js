@@ -3,7 +3,8 @@ const Conversation = require('../models/Conversation');
 const Message = require('../models/Message');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
-
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
 // --- START a conversation or GET existing one ---
 const getOrCreateConversation = async (req, res) => {
     const { recipientId, recipientModel } = req.body; // e.g., Artist's ID

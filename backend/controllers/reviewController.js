@@ -5,7 +5,9 @@ const Course = require('../models/Course');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const { checkPermissions } = require('../utils');
-
+const Order = require('../models/Order');
+const OrderItem = require('../models/OrderItem');
+const mongoose = require('mongoose');
 // Helper to update the average rating on a product
 const updateAverageRating = async (modelName, reviewableId) => {
     const Model = mongoose.model(modelName);
@@ -35,27 +37,30 @@ const updateAverageRating = async (modelName, reviewableId) => {
 const createReview = async (req, res) => {
     const { onModel, reviewable: reviewableId, rating, title, comment } = req.body;
 
-    // We only apply this logic for Artworks for now. Courses can have a different logic (e.g., enrollment).
-    if (onModel === 'Artwork') {
-        // --- VERIFICATION STEP ---
-        // Find an order item that matches the artwork AND was part of an order made by this user.
-        const hasPurchased = await OrderItem.findOne({
-            artwork: reviewableId,
-            'order.user': req.user.userId, // This assumes you populate the user in the order query, or do a two-step query
+    // --- PURCHASE VERIFICATION LOGIC ---
+    if (onModel === 'Artwork' || onModel === 'Course') {
+        // Find orders by this user that are paid/delivered
+        const userOrders = await Order.find({ user: req.user.userId, status: { $in: ['paid', 'delivered'] } });
+        
+        if (userOrders.length === 0) {
+            throw new CustomError.UnauthorizedError(`You must purchase this ${onModel.toLowerCase()} to leave a review.`);
+        }
+
+        const orderIds = userOrders.map(order => order._id);
+
+        // Check if any of those orders contain the specific product
+        const hasPurchasedItem = await OrderItem.findOne({ 
+            order: { $in: orderIds },
+            product: reviewableId,
+            onModel: onModel,
         });
 
-        // A more robust way to check:
-        const order = await Order.findOne({ 'user': req.user.userId, 'status': 'delivered' });
-        if (!order) {
-            throw new CustomError.UnauthorizedError('You must purchase and receive an item to review it.');
-        }
-        const hasPurchasedItem = await OrderItem.findOne({ order: order._id, artwork: reviewableId });
-
         if (!hasPurchasedItem) {
-            throw new CustomError.UnauthorizedError('You can only review artworks you have purchased.');
+            throw new CustomError.UnauthorizedError(`You have not purchased this specific ${onModel.toLowerCase()}.`);
         }
     }
-    // You could add similar logic for 'Course' based on an Enrollment model later.
+    // --- END OF VERIFICATION ---
+
 
     const Model = onModel === 'Artwork' ? Artwork : Course;
     const isValidProduct = await Model.findOne({ _id: reviewableId });
@@ -63,13 +68,9 @@ const createReview = async (req, res) => {
         throw new CustomError.NotFoundError(`No ${onModel.toLowerCase()} with id: ${reviewableId}`);
     }
 
-    const alreadySubmitted = await Review.findOne({
-        onModel,
-        reviewable: reviewableId,
-        user: req.user.userId,
-    });
+    const alreadySubmitted = await Review.findOne({ onModel, reviewable: reviewableId, user: req.user.userId });
     if (alreadySubmitted) {
-        throw new CustomError.BadRequestError('Already submitted review for this product');
+        throw new CustomError.BadRequestError('You have already submitted a review for this product.');
     }
 
     req.body.user = req.user.userId;
@@ -79,7 +80,6 @@ const createReview = async (req, res) => {
 
     res.status(StatusCodes.CREATED).json({ review });
 };
-
 // --- GET ALL REVIEWS FOR A SPECIFIC ITEM ---
 const getReviewsForItem = async (req, res) => {
     const { onModel, itemId } = req.params;

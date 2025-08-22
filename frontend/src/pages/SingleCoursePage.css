@@ -106,10 +106,3 @@
     grid-template-columns: 1fr;
   }
 }
-
-.review-prompt {
-  margin-bottom: 2rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #f0f0f0;
-  text-align: center;
-}

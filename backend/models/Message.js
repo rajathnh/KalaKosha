@@ -21,5 +21,11 @@ const MessageSchema = new mongoose.Schema({
     type: String,
   },
 }, { timestamps: true });
-
+MessageSchema.pre('validate', function(next) {
+    if (!this.content && !this.imageUrl) {
+        next(new Error('A message must have either content or an image.'));
+    } else {
+        next();
+    }
+});
 module.exports = mongoose.model('Message', MessageSchema);

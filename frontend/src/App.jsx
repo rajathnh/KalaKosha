@@ -19,6 +19,9 @@ import CheckoutPage from './pages/CheckoutPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import ChatPage from './pages/ChatPage';
 import DashboardPage from './pages/DashboardPage';
+import CourseListPage from './pages/CourseListPage';
+import SingleCoursePage from './pages/SingleCoursePage';
+
 function App() {
   return (
     <div className="App">
@@ -34,6 +37,8 @@ function App() {
           <Route path="/register/artist" element={<RegisterArtistPage />} />
           <Route path="/artworks/:id" element={<SingleArtworkPage />} />
           <Route path="/artists/:id" element={<ArtistProfilePage />} />
+          <Route path="/courses" element={<CourseListPage />} />
+          <Route path="/courses/:id" element={<SingleCoursePage />} />
           {/* --- Protected Routes (to be built) --- */}
           <Route 
     path="/checkout/:artworkId" // The URL will contain the ID of the artwork to buy
@@ -43,6 +48,10 @@ function App() {
       </ProtectedRoute>
     } 
   />
+  <Route 
+            path="/checkout/course/:courseId" 
+            element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} 
+          />
 <Route 
     path="/chat" 
     element={
@@ -51,6 +60,14 @@ function App() {
       </ProtectedRoute>
     } 
   />
+   <Route 
+            path="/chat/:recipientId" // Change this from "/chat"
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            } 
+          />
   <Route 
     path="/dashboard" 
     element={

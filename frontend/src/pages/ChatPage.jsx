@@ -1,127 +1,247 @@
-// src/pages/ChatPage.jsx
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/axios';
 import './ChatPage.css';
-
+import CommissionFormModal from '../components/CommissionFormModal';
+import CommissionPanel from '../components/CommissionPanel';
 const ChatPage = () => {
-    const { user } = useAuth();
+    // --- STATE MANAGEMENT ---
+    const { user, loading: authLoading } = useAuth();
     const location = useLocation();
-    
-    // State for the conversation
-    const [artistToContact, setArtistToContact] = useState(null);
+    const { recipientId } = useParams();
+    const navigate = useNavigate();
+
+    // Data State
+    const [recipient, setRecipient] = useState(null);
     const [conversationId, setConversationId] = useState(null);
     const [messages, setMessages] = useState([]);
+    const [commissions, setCommissions] = useState([]);
     
-    // State for the input form
+    // UI State
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [newMessage, setNewMessage] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [imageFile, setImageFile] = useState(null);
+    const [pageLoading, setPageLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    const messagesEndRef = useRef(null); // To auto-scroll to the bottom
+    // Refs
+    const messagesEndRef = useRef(null);
+    const fileInputRef = useRef(null);
 
-    // Effect to get or create the conversation
+    // --- EFFECTS ---
+
+    // 1. Initialize the chat session
     useEffect(() => {
-        const artist = location.state?.artist;
-        if (artist) {
-            setArtistToContact(artist);
-            const getOrCreateConvo = async () => {
-                try {
-                    const response = await apiClient.post('/chat/conversations', {
-                        recipientId: artist._id,
-                        recipientModel: 'Artist',
-                    });
-                    setConversationId(response.data.conversation._id);
-                } catch (error) {
-                    console.error('Failed to start conversation', error);
-                }
-            };
-            getOrCreateConvo();
+        if (authLoading) {
+            console.log("ChatPage waiting for auth...");
+            return; // Wait until the authentication check is complete
         }
-    }, [location.state]);
+        if (!user) {
+            console.log("No user found, redirecting to login.");
+            navigate('/login');
+            return;
+        }
+        if (!recipientId) {
+            console.log("No recipient ID in URL.");
+            setError("Cannot start a chat without a recipient.");
+            setPageLoading(false);
+            return;
+        }
 
-    // Effect for polling messages
-    useEffect(() => {
-        if (!conversationId) return;
-
-        setLoading(true);
-        const fetchMessages = async () => {
+        const initializeChat = async () => {
+            console.log("Initializing chat with recipient:", recipientId);
+            setPageLoading(true);
+            setError(null);
             try {
-                const response = await apiClient.get(`/chat/conversations/${conversationId}/messages`);
-                setMessages(response.data.messages);
-            } catch (error) {
-                console.error('Failed to fetch messages', error);
+                const recipientFromState = location.state?.recipient;
+                const recipientModel = recipientFromState?.role === 'artist' ? 'Artist' : 'User';
+                
+                const response = await apiClient.post('/chat/conversations', { recipientId, recipientModel });
+                const convo = response.data.conversation;
+                console.log("Conversation loaded:", convo._id);
+                setConversationId(convo._id);
+
+                const otherParticipant = convo.participants.find(p => p && p._id !== user.userId);
+                if (otherParticipant) {
+                    setRecipient(otherParticipant);
+                } else { throw new Error("Could not identify the other chat participant."); }
+
+            } catch (err) {
+                console.error('CRITICAL: Failed to initialize chat session', err);
+                setError('Failed to load conversation. Please try again later.');
             } finally {
-                setLoading(false);
+                console.log("Finished initialization, setting page loading to false.");
+                setPageLoading(false);
             }
         };
 
-        fetchMessages(); // Initial fetch
-        const interval = setInterval(fetchMessages, 3000); // Poll every 3 seconds
+        initializeChat();
+    }, [recipientId, user, authLoading, location.state, navigate]);
 
-        return () => clearInterval(interval); // Cleanup on component unmount
+    // 2. Poll for messages
+    useEffect(() => {
+        if (!conversationId) return;
+        const fetchMessages = async () => {
+            try {
+                const response = await apiClient.get(`/chat/conversations/${conversationId}/messages`);
+                setMessages(response.data.messages || []);
+            } catch (err) { console.error('Polling messages failed:', err); }
+        };
+        fetchMessages();
+        const interval = setInterval(fetchMessages, 5000);
+        return () => clearInterval(interval);
     }, [conversationId]);
 
-    // Effect to scroll to the bottom of the chat
+    // 3. Poll for commissions
+    useEffect(() => {
+        if (!conversationId) return;
+        const fetchCommissions = async () => {
+            try {
+                const response = await apiClient.get(`/commissions/conversation/${conversationId}`);
+                setCommissions(response.data.commissions || []);
+            } catch (err) { console.error('Polling commissions failed:', err); }
+        };
+        fetchCommissions();
+        const interval = setInterval(fetchCommissions, 5000);
+        return () => clearInterval(interval);
+    }, [conversationId]);
+
+    // 4. Auto-scroll
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    }, [messages, commissions]);
+    
+
+    // --- HANDLER FUNCTIONS ---
+    const handleFileChange = (e) => setImageFile(e.target.files[0]);
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim()) return;
-
+        if ((!newMessage.trim() && !imageFile) || !conversationId) return;
+        const formData = new FormData();
+        formData.append('content', newMessage);
+        if (imageFile) formData.append('image', imageFile);
+        setNewMessage('');
+        setImageFile(null);
+        if(fileInputRef.current) fileInputRef.current.value = "";
         try {
-            const tempMessage = { // Optimistic UI update
-                _id: Date.now(),
-                senderId: user.userId,
-                content: newMessage,
-            };
-            setMessages(prev => [...prev, tempMessage]);
-            setNewMessage('');
-
-            await apiClient.post(`/chat/conversations/${conversationId}/messages`, {
-                content: newMessage,
+            await apiClient.post(`/chat/conversations/${conversationId}/messages`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
             });
-            // The next poll will fetch the "real" message from the DB
-        } catch (error) {
-            console.error('Failed to send message', error);
-            // Optionally, remove the temp message on failure
+        } catch (err) { console.error('Failed to send message', err); }
+    };
+    
+    const handleAcceptCommission = async (commissionId) => {
+        try {
+            await apiClient.post(`/commissions/${commissionId}/accept`);
+        } catch(err) {
+            alert('Could not accept the commission.');
+            console.error(err);
+        }
+    };
+    
+    const handleCreateCommission = async (commissionData) => {
+        try {
+            await apiClient.post('/commissions', {
+                ...commissionData, customerId: recipientId, conversationId: conversationId,
+            });
+            setIsModalOpen(false);
+        } catch (err) {
+            alert('Error: Could not create commission offer.');
+            console.error(err);
         }
     };
 
+    // --- RENDER LOGIC ---
+    if (pageLoading || authLoading) {
+        return <div className="container section"><h2>Loading Conversation...</h2></div>;
+    }
+
+    if (error) {
+        return <div className="container section"><p className="error-message">{error}</p></div>;
+    }
+
+    const chatFeed = [...messages, ...commissions].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
     return (
-        <div className="chat-page section">
-            <div className="container">
-                <div className="chat-header">
-                    {artistToContact && (
-                        <>
-                            <img src={artistToContact.profilePicture} alt={artistToContact.name} className="chat-avatar" />
-                            <h2>Chat with {artistToContact.name}</h2>
-                        </>
-                    )}
-                </div>
-                <div className="chat-messages-container">
-                    {loading && messages.length === 0 && <p>Loading messages...</p>}
-                    {messages.map((msg) => (
-                        <div key={msg._id} className={`message-item ${msg.senderId === user.userId ? 'self' : 'other'}`}>
-                            <p>{msg.content}</p>
-                            {/* We can add timestamps later */}
+        <>
+            {/* The modal for creating commissions lives outside the main layout */}
+            <CommissionFormModal 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)}
+                onSubmit={handleCreateCommission}
+            />
+            
+            <div className="chat-page-layout section">
+                {/* --- MAIN CHAT CONTAINER (LEFT COLUMN) --- */}
+                <div className="chat-container">
+                    <div className="chat-header">
+                        {recipient && (
+                            <>
+                                <img src={recipient.profilePicture || '/default-profile.png'} alt={recipient.name} className="chat-avatar" />
+                                <h2>Chat with {recipient.name}</h2>
+                            </>
+                        )}
+                    </div>
+                    <div className="chat-messages-container">
+                        {chatFeed.length > 0 ? (
+                            chatFeed.map((item) => {
+                                // Check if the item is a commission to render the special card
+                                if (item.status && item.status === 'Offered' && user.role !== 'artist') {
+                                    return (
+                                        <div key={`comm-${item._id}`} className="commission-card">
+                                            <h4>Commission Offer: {item.title}</h4>
+                                            <p>{item.description}</p>
+                                            <div className="commission-footer">
+                                                <span className="commission-price">${item.price}</span>
+                                                <button onClick={() => handleAcceptCommission(item._id)} className="btn btn-primary">Accept & Pay</button>
+                                            </div>
+                                        </div>
+                                    );
+                                }
+                                // Check if the item is a message
+                                if (item.content || item.imageUrl) {
+                                    const msg = item;
+                                    return (
+                                        <div key={`msg-${msg._id}`} className={`message-item ${msg.senderId === user.userId ? 'self' : 'other'}`}>
+                                            {msg.imageUrl && <img src={msg.imageUrl} alt="Chat attachment" className="chat-image" />}
+                                            {msg.content && <p>{msg.content}</p>}
+                                        </div>
+                                    );
+                                }
+                                return null; // Don't render commissions with other statuses in the main feed
+                            })
+                        ) : (
+                            !pageLoading && <p className="no-messages">No messages yet. Say hello!</p>
+                        )}
+                        <div ref={messagesEndRef} />
+                    </div>
+
+                    {/* Button for the artist to open the commission creation modal */}
+                    {user.role === 'artist' && (
+                        <div className="create-commission-area">
+                            <button onClick={() => setIsModalOpen(true)} className="btn btn-outline">
+                                Create Commission Offer
+                            </button>
                         </div>
-                    ))}
-                    <div ref={messagesEndRef} /> {/* Invisible element to scroll to */}
+                    )}
+                    
+                    {/* The message input form */}
+                    <form onSubmit={handleSendMessage} className="chat-input-form">
+                        <input type="file" ref={fileInputRef} id="file-input" style={{ display: 'none' }} onChange={handleFileChange} accept="image/*" />
+                        <label htmlFor="file-input" className="file-input-label">📎</label>
+                        <input type="text" placeholder={imageFile ? imageFile.name : "Type your message..."} value={newMessage} onChange={(e) => setNewMessage(e.target.value)} disabled={!conversationId}/>
+                        <button type="submit" className="btn btn-primary" disabled={!conversationId}>Send</button>
+                    </form>
                 </div>
-                <form onSubmit={handleSendMessage} className="chat-input-form">
-                    <input
-                        type="text"
-                        placeholder="Type your message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                    />
-                    <button type="submit" className="btn btn-primary">Send</button>
-                </form>
+
+                {/* --- COMMISSION MANAGEMENT PANEL (RIGHT COLUMN) --- */}
+                <aside className="commission-panel-container">
+                    <CommissionPanel commissions={commissions} onUpdate={() => { /* Polling handles updates */ }} />
+                </aside>
             </div>
-        </div>
+        </>
     );
 };
 

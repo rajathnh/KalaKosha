@@ -40,7 +40,7 @@ const handleContact = () => {
       navigate('/login', { state: { from: { pathname: '/chat' }, artist: artistToContact } });
     } else {
       // If logged in, go directly to chat, passing the artist's info
-      navigate('/chat', { state: { artist: artistToContact } });
+      navigate(`/chat/${artistToContact._id}`, { state: { recipient: artistToContact } });
     }
   };
   // --- BULLETPROOF RENDER LOGIC ---
