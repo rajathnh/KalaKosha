@@ -80,9 +80,21 @@ const getMessages = async (req, res) => {
     res.status(StatusCodes.OK).json({ messages, count: messages.length });
 };
 
+const getUserConversations = async (req, res) => {
+    const userId = req.user.userId;
 
+    const conversations = await Conversation.find({ participants: userId })
+        .populate({
+            path: 'participants',
+            select: 'name profilePicture', // Get the other person's details
+        })
+        .sort('-updatedAt'); // Show most recent conversations first
+
+    res.status(StatusCodes.OK).json({ conversations });
+};
 module.exports = {
     getOrCreateConversation,
     sendMessage,
     getMessages,
+    getUserConversations
 };

@@ -7,6 +7,7 @@ const {
     getOrCreateConversation,
     sendMessage,
     getMessages,
+    getUserConversations
 } = require('../controllers/chatController');
 
 // All chat routes require a logged-in user
@@ -14,7 +15,7 @@ router.use(authenticateUser);
 
 // Route to start/find a conversation with another user
 router.route('/conversations').post(getOrCreateConversation);
-
+router.route('/my-conversations').get(getUserConversations);
 // Routes to handle messages within a specific conversation
 router.route('/conversations/:conversationId/messages')
     .post(sendMessage) // Send a new message

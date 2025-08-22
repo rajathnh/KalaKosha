@@ -1,0 +1,24 @@
+/* src/components/ConversationList.css */
+.conversation-list h3 {
+  margin-bottom: 1.5rem;
+}
+.conversation-list ul {
+  list-style: none;
+}
+.conversation-list li a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+.conversation-list li a:hover {
+  background-color: var(--footer-bg);
+}
+.conversation-list li img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
