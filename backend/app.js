@@ -28,9 +28,11 @@ const connectDB = require("./db/connect");
 
 // --- Routers ---
 const authRouter = require('./routes/authRoutes');
-// Placeholders for future routers
-// const userRouter = require('./routes/userRoutes');
-// const artistRouter = require('./routes/artistRoutes');
+const artworkRouter = require('./routes/artworkRoutes');
+const courseRouter = require('./routes/courseRoutes'); 
+const blogPostRouter = require('./routes/blogPostRoutes');
+const artistRouter = require('./routes/artistRoutes');
+
 
 // --- Middleware Imports ---
 const notFoundMiddleware = require("./middleware/not-found");
@@ -71,8 +73,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // --- API ROUTES ---
 app.use('/api/v1/auth', authRouter);
-// app.use('/api/v1/users', userRouter);
-// app.use('/api/v1/artists', artistRouter);
+app.use('/api/v1/artworks', artworkRouter);
+app.use('/api/v1/courses', courseRouter);
+app.use('/api/v1/blog', blogPostRouter);
+app.use('/api/v1/artists', artistRouter);
 
 
 // --- Custom Error Handling Middleware (must be last) ---
