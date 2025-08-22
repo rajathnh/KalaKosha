@@ -14,22 +14,42 @@ const showCurrentUser = async (req, res) => {
 
 // --- UPDATE USER/ARTIST DETAILS ---
 const updateUser = async (req, res) => {
-    const { name, email, bio } = req.body; // Add any other fields you want to be updatable
+    const { name, email, bio } = req.body;
     if (!name || !email) {
         throw new CustomError.BadRequestError('Please provide name and email');
     }
 
     let user;
     if (req.user.role === 'artist') {
+        // --- ARTIST-SPECIFIC LOGIC ---
         user = await Artist.findOne({ _id: req.user.userId });
-    } else {
-        user = await User.findOne({ _id: req.user.userId });
-    }
+        user.email = email;
+        user.name = name;
+        if (bio) {
+            user.bio = bio;
+        }
 
-    user.email = email;
-    user.name = name;
-    if (req.user.role === 'artist' && bio) {
-        user.bio = bio;
+        // Handle profile picture update ONLY for artists
+        if (req.files && req.files.profilePicture) {
+            const profilePicFile = req.files.profilePicture;
+            try {
+                const result = await cloudinary.uploader.upload(profilePicFile.tempFilePath, {
+                    use_filename: true,
+                    folder: 'kalakosha-artists',
+                    resource_type: 'image',
+                });
+                fs.unlinkSync(profilePicFile.tempFilePath);
+                user.profilePicture = result.secure_url;
+            } catch (error) {
+                console.error('Artist profile picture update failed:', error);
+            }
+        }
+    } else {
+        // --- CUSTOMER-SPECIFIC LOGIC ---
+        user = await User.findOne({ _id: req.user.userId });
+        user.email = email;
+        user.name = name;
+        // No bio or profile picture logic here
     }
 
     await user.save();

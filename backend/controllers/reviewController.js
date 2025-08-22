@@ -35,14 +35,34 @@ const updateAverageRating = async (modelName, reviewableId) => {
 const createReview = async (req, res) => {
     const { onModel, reviewable: reviewableId, rating, title, comment } = req.body;
 
-    // Validate that the product exists
+    // We only apply this logic for Artworks for now. Courses can have a different logic (e.g., enrollment).
+    if (onModel === 'Artwork') {
+        // --- VERIFICATION STEP ---
+        // Find an order item that matches the artwork AND was part of an order made by this user.
+        const hasPurchased = await OrderItem.findOne({
+            artwork: reviewableId,
+            'order.user': req.user.userId, // This assumes you populate the user in the order query, or do a two-step query
+        });
+
+        // A more robust way to check:
+        const order = await Order.findOne({ 'user': req.user.userId, 'status': 'delivered' });
+        if (!order) {
+            throw new CustomError.UnauthorizedError('You must purchase and receive an item to review it.');
+        }
+        const hasPurchasedItem = await OrderItem.findOne({ order: order._id, artwork: reviewableId });
+
+        if (!hasPurchasedItem) {
+            throw new CustomError.UnauthorizedError('You can only review artworks you have purchased.');
+        }
+    }
+    // You could add similar logic for 'Course' based on an Enrollment model later.
+
     const Model = onModel === 'Artwork' ? Artwork : Course;
     const isValidProduct = await Model.findOne({ _id: reviewableId });
     if (!isValidProduct) {
         throw new CustomError.NotFoundError(`No ${onModel.toLowerCase()} with id: ${reviewableId}`);
     }
 
-    // Check if user already submitted a review for this product
     const alreadySubmitted = await Review.findOne({
         onModel,
         reviewable: reviewableId,
@@ -55,12 +75,10 @@ const createReview = async (req, res) => {
     req.body.user = req.user.userId;
     const review = await Review.create(req.body);
 
-    // After creating the review, update the average rating
     await updateAverageRating(onModel, reviewableId);
 
     res.status(StatusCodes.CREATED).json({ review });
 };
-
 
 // --- GET ALL REVIEWS FOR A SPECIFIC ITEM ---
 const getReviewsForItem = async (req, res) => {

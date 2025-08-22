@@ -37,6 +37,11 @@ const chatRouter = require('./routes/chatRoutes');
 const commissionRouter = require('./routes/commissionRoutes');
 const userRouter = require('./routes/userRoutes');
 const commissionReviewRouter = require('./routes/commissionReviewRoutes');
+const orderRouter = require('./routes/orderRoutes');
+const commentRouter = require('./routes/commentRoutes');
+const enrollmentRouter = require('./routes/enrollmentRoutes');
+
+
 
 // --- Middleware Imports ---
 const notFoundMiddleware = require("./middleware/not-found");
@@ -86,6 +91,9 @@ app.use('/api/v1/chat', chatRouter);
 app.use('/api/v1/commissions', commissionRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/commission-reviews', commissionReviewRouter);
+app.use('/api/v1/orders', orderRouter);
+app.use('/api/v1/comments', commentRouter);
+app.use('/api/v1/enrollments', enrollmentRouter);
 
 // --- Custom Error Handling Middleware (must be last) ---
 app.use(notFoundMiddleware);
