@@ -32,6 +32,8 @@ const artworkRouter = require('./routes/artworkRoutes');
 const courseRouter = require('./routes/courseRoutes'); 
 const blogPostRouter = require('./routes/blogPostRoutes');
 const artistRouter = require('./routes/artistRoutes');
+const reviewRouter = require('./routes/reviewRoutes');
+const chatRouter = require('./routes/chatRoutes');
 
 
 // --- Middleware Imports ---
@@ -77,6 +79,8 @@ app.use('/api/v1/artworks', artworkRouter);
 app.use('/api/v1/courses', courseRouter);
 app.use('/api/v1/blog', blogPostRouter);
 app.use('/api/v1/artists', artistRouter);
+app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/chat', chatRouter);
 
 
 // --- Custom Error Handling Middleware (must be last) ---

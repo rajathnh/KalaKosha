@@ -38,6 +38,14 @@ const ArtworkSchema = new mongoose.Schema(
       ref: 'Artist',
       required: true,
     },
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    numOfReviews: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
