@@ -59,7 +59,10 @@ const createArtwork = async (req, res) => {
 const getAllArtworks = async (req, res) => {
   const { search, artForm, sort } = req.query;
 
-  const queryObject = {};
+  // MODIFICATION HERE:
+  // Initialize the query to only find artworks with the status 'For Sale'.
+  // This is the base filter that will always be applied.
+  const queryObject = { status: 'For Sale' };
 
   if (search) {
     // Search by title or description (case-insensitive)
