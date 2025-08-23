@@ -1,0 +1,154 @@
+/* src/pages/BadgeSystemPage.css */
+
+.badge-system-page .page-header {
+  margin-bottom: 4rem;
+}
+
+.badge-system-page .page-title {
+  font-size: 3rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.badge-system-page .page-subtitle {
+  font-size: 1.5rem;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+}
+
+.badge-system-page .page-description {
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.paths-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.path-card {
+  background: white;
+  padding: 2.5rem 2rem;
+  border-radius: 15px;
+  box-shadow: var(--shadow-light);
+  border-top: 5px solid var(--accent-color);
+  transition: var(--transition);
+}
+
+.path-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-medium);
+}
+
+.path-title {
+  font-size: 1.8rem;
+  color: var(--text-dark);
+  margin-bottom: 1rem;
+}
+
+.path-description {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+  min-height: 50px; /* Helps align cards */
+}
+
+.badge-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.badge-level {
+  padding-left: 1.5rem;
+  border-left: 4px solid;
+}
+
+.badge-level h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.25rem;
+}
+
+.badge-level p {
+  margin-bottom: 0.25rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.badge-level p em {
+  color: var(--text-dark);
+}
+
+.badge-level p strong {
+  color: var(--primary-color);
+  font-weight: 700;
+}
+
+/* Tier colors */
+.badge-level.gold { border-color: #ffd700; }
+.badge-level.gold h3 { color: #b8860b; }
+
+.badge-level.silver { border-color: #c0c0c0; }
+.badge-level.silver h3 { color: #555; }
+
+.badge-level.bronze { border-color: #cd7f32; }
+.badge-level.bronze h3 { color: #8b4513; }
+
+
+.why-it-matters-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 4rem;
+  background: var(--footer-bg);
+  padding: 2rem;
+  border-radius: 15px;
+}
+
+.why-card {
+  padding: 1.5rem;
+}
+
+.why-card h3 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.why-card p {
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+.paths-main-title {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 3rem;
+  color: var(--text-dark);
+}
+
+.path-card-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.path-card {
+  display: flex; /* New */
+  flex-direction: column; /* New */
+}
+
+.badge-levels {
+  margin-top: auto; /* New: Pushes the badge levels to the bottom */
+}
+
+
+/* --- Responsive adjustments for the new section --- */
+@media (max-width: 768px) {
+  .why-it-matters-section {
+    grid-template-columns: 1fr;
+  }
+}

@@ -3,6 +3,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ScrollToTop from './components/ScrollToTop';
 
+
 // Layout Components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -28,6 +29,7 @@ import CreateCoursePage from './pages/CreateCoursePage';
 import CreateBlogPage from './pages/CreateBlogPage'; 
 import SingleBlogPostPage from './pages/SingleBlogPostPage';
 import BlogListPage from './pages/BlogListPage';
+import BadgeSystemPage from './pages/BadgeSystemPage'; 
 import './App.css';
 
 import EventListPage from './pages/EventListPage';
@@ -66,6 +68,7 @@ function App() {
           <Route path="/events" element={<EventListPage />} />  
           <Route path="/forum" element={<CommunityForumPage />} />
           <Route path="/events/:id" element={<SingleEventPage />} />
+          <Route path="/badge-system" element={<BadgeSystemPage />} /> {}
           {/* --- Protected Routes (to be built) --- */}
           <Route 
             path="/checkout/artwork/:artworkId" // The URL will contain the ID of the artwork to buy
