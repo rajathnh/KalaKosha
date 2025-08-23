@@ -30,11 +30,13 @@ import SingleBlogPostPage from './pages/SingleBlogPostPage';
 import BlogListPage from './pages/BlogListPage';
 import './App.css';
 
+import EventListPage from './pages/EventListPage';
 // --- NEW IMPORTS FOR THE DISCOVER SECTION ---
 import DiscoverPage from './pages/DiscoverPage';
 import ArtFormDetailPage from './pages/ArtFormDetailPage';
-
+import CreateEventPage from './pages/CreateEventPage'; 
 import CommunityForumPage from './pages/CommunityForumPage';
+import SingleEventPage from './pages/SingleEventPage';
 
 function App() {
   return (
@@ -61,8 +63,9 @@ function App() {
           <Route path="/courses/:id" element={<SingleCoursePage />} />
           <Route path="/blog/:id" element={<SingleBlogPostPage />} />
           <Route path="/blog" element={<BlogListPage />} />
-
+          <Route path="/events" element={<EventListPage />} />  
           <Route path="/forum" element={<CommunityForumPage />} />
+          <Route path="/events/:id" element={<SingleEventPage />} />
           {/* --- Protected Routes (to be built) --- */}
           <Route 
             path="/checkout/artwork/:artworkId" // The URL will contain the ID of the artwork to buy
@@ -75,6 +78,10 @@ function App() {
           <Route 
             path="/checkout/course/:courseId" 
             element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} 
+          />
+          <Route 
+            path="/events/create" 
+            element={ <ProtectedRoute roles={['artist']}><CreateEventPage /></ProtectedRoute> } 
           />
           <Route 
             path="/chat" 

@@ -103,6 +103,7 @@ const Navbar = () => {
             <Link to="/discover">Discover</Link>
             <Link to="/blog">Blog</Link>
             <Link to="/forum">Community</Link>
+            <Link to="/events">Events</Link>
           </div>
         </div>
 
