@@ -2,3 +2,18 @@
   min-height: 100vh;
   overflow-x: hidden;
 }
+/* Global styles for sticky footer */
+html, body, #root {
+  height: 100%;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1 0 auto;
+  width: 100%;
+}

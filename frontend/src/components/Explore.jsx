@@ -16,7 +16,11 @@ const Explore = () => {
     <section id="explore" className="explore section">
       <div className="container">
         <div className="explore-header text-center">
-          {/* ...your header content... */}
+          <h3 className="explore-subtitle">Explore</h3>
+          <h2 className="explore-title">Unveil the Beauty of Indian Folk Art</h2>
+          <p className="explore-description">
+            Discover a treasure trove of unique artworks that reflect the rich heritage of India. Each piece tells a story, connecting you to the vibrant culture and traditions of local artisans.
+          </p>
         </div>
         
         <div className="explore-cards">

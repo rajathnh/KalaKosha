@@ -28,6 +28,7 @@ import CreateCoursePage from './pages/CreateCoursePage';
 import CreateBlogPage from './pages/CreateBlogPage'; 
 import SingleBlogPostPage from './pages/SingleBlogPostPage';
 import BlogListPage from './pages/BlogListPage';
+import './App.css';
 
 // --- NEW IMPORTS FOR THE DISCOVER SECTION ---
 import DiscoverPage from './pages/DiscoverPage';
@@ -37,10 +38,10 @@ import CommunityForumPage from './pages/CommunityForumPage';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App app-container">
        <ScrollToTop /> {}
       <Navbar />
-      <main style={{ paddingTop: '80px' }}> {/* Add padding to prevent content from hiding under the fixed navbar */}
+      <main className="main-content" style={{ paddingTop: '80px' }}> {/* Add padding to prevent content from hiding under the fixed navbar */}
         <Routes>
           {/* --- Public Routes --- */}
           <Route path="/" element={<HomePage />} />
