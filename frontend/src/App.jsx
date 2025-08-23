@@ -28,15 +28,12 @@ import CreateCoursePage from './pages/CreateCoursePage';
 import CreateBlogPage from './pages/CreateBlogPage'; 
 import SingleBlogPostPage from './pages/SingleBlogPostPage';
 import BlogListPage from './pages/BlogListPage';
-<<<<<<< Updated upstream
 
 // --- NEW IMPORTS FOR THE DISCOVER SECTION ---
 import DiscoverPage from './pages/DiscoverPage';
 import ArtFormDetailPage from './pages/ArtFormDetailPage';
 
-=======
 import CommunityForumPage from './pages/CommunityForumPage';
->>>>>>> Stashed changes
 
 function App() {
   return (
@@ -63,11 +60,8 @@ function App() {
           <Route path="/courses/:id" element={<SingleCoursePage />} />
           <Route path="/blog/:id" element={<SingleBlogPostPage />} />
           <Route path="/blog" element={<BlogListPage />} />
-<<<<<<< Updated upstream
 
-=======
           <Route path="/forum" element={<CommunityForumPage />} />
->>>>>>> Stashed changes
           {/* --- Protected Routes (to be built) --- */}
           <Route 
             path="/checkout/:artworkId" // The URL will contain the ID of the artwork to buy
