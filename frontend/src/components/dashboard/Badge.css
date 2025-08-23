@@ -1,0 +1,22 @@
+/* src/components/Badge.css */
+.artist-badge {
+  display: inline-block;
+  color: #2c2c2c; /* Dark text for better contrast on light badge colors */
+  padding: 10px 32px;
+  font-size: 1.15rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  border-radius: 32px;
+  margin: 0 10px 10px 0; /* Allow badges to wrap nicely */
+  vertical-align: middle;
+  text-shadow: 1px 1px 1px rgba(252, 246, 246, 0.8);
+  cursor: help; /* Indicates the title tooltip on hover */
+  box-shadow: 0 2px 12px rgba(44,44,44,0.12);
+  border: 2px solid rgba(44,44,44,0.08);
+  transition: transform 0.2s;
+}
+
+.artist-badge:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 18px rgba(44,44,44,0.18);
+}

@@ -4,13 +4,22 @@ const Artist = require('../models/Artist');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const { createTokenUser, attachCookiesToResponse } = require('../utils');
-
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
 // --- GET CURRENT LOGGED-IN USER ---
 const showCurrentUser = async (req, res) => {
     // req.user is attached by our authentication middleware
     res.status(StatusCodes.OK).json({ user: req.user });
 };
 
+// --- GET A SINGLE USER'S PUBLIC PROFILE (NEW FUNCTION) ---
+const getSingleUser = async (req, res) => {
+    const user = await User.findOne({ _id: req.params.id }).select('-password');
+    if (!user) {
+        throw new CustomError.NotFoundError(`No user with id: ${req.params.id}`);
+    }
+    res.status(StatusCodes.OK).json({ user });
+};
 
 // --- UPDATE USER/ARTIST DETAILS ---
 const updateUser = async (req, res) => {
@@ -84,4 +93,4 @@ const updateUserPassword = async (req, res) => {
     res.status(StatusCodes.OK).json({ msg: 'Success! Password updated.' });
 };
 
-module.exports = { showCurrentUser, updateUser, updateUserPassword };
+module.exports = { showCurrentUser, getSingleUser, updateUser, updateUserPassword };

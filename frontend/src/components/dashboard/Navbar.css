@@ -1,0 +1,242 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: var(--gradient-navbar);
+  z-index: 1000;
+  box-shadow: var(--shadow-light);
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  max-width: 1350px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navbar-logo {
+  height: 45px;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.logo-image {
+  width: 45px;
+  height: 40px;
+  background-image: url('../../public/logo.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+}
+
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin-left: 0.5rem;
+}
+
+.navbar-menu {
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar-menu a {
+  color: var(--text-light);
+  font-weight: 500;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.navbar-menu a:hover {
+  color: #ccb792;
+  transform: translateY(-2px);
+}
+
+.nav-link-button {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-weight: 500;
+  transition: var(--transition);
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 0;
+}
+
+.nav-link-button:hover {
+  color: #ccb792;
+  transform: translateY(-2px);
+}
+
+.navbar-right {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.navbar-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+#register {
+  color: rgb(241, 239, 234);
+  border: 1px solid rgb(208, 195, 195);
+  background: transparent;
+}
+
+#login {
+  background-color: #c7773e;
+  color: var(--text-light);
+  border: none;
+}
+
+#login:hover {
+  background-color: #4a2810;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.greet {
+  color: var(--text-light);
+  font-weight: 500;
+  padding: 0 1rem;
+}
+
+/* Mobile Toggle Button */
+.navbar-mobile-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1001;
+}
+
+.navbar-mobile-toggle .bar {
+  width: 25px;
+  height: 3px;
+  background-color: var(--text-light);
+  margin: 2px 0;
+  transition: var(--transition);
+  transform-origin: center;
+}
+
+/* Mobile Menu */
+.navbar-mobile-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--gradient-navbar);
+  flex-direction: column;
+  padding: 1rem;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: flex;
+  visibility: hidden;
+  z-index: 999;
+}
+
+.navbar-mobile-menu.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-nav-item {
+  color: var(--text-light);
+  padding: 0.75rem 0;
+  text-align: left;
+  text-decoration: none;
+  font-weight: 500;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 1rem;
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-item:hover {
+  color: #ad8832;
+}
+
+.mobile-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+.mobile-auth-btn {
+  width: 60%;
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 7px;
+  text-decoration: none;
+}
+
+/* Hamburger Animation */
+.navbar-mobile-toggle.open .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.navbar-mobile-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar-mobile-toggle.open .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .navbar-menu,
+  .navbar-right {
+    display: none;
+  }
+  
+  .navbar-mobile-toggle {
+    display: flex;
+  }
+  
+  .navbar-container {
+    padding: 0.8rem 1rem;
+  }
+  
+  .navbar-left {
+    gap: 1rem;
+  }
+  
+  .navbar-mobile-menu {
+    display: flex;
+  }
+}

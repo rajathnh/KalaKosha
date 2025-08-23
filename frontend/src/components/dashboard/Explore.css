@@ -1,0 +1,157 @@
+.explore {
+  background-color: var(--background-color);
+}
+
+.explore-header {
+  margin-bottom: 4rem;
+}
+
+.explore-subtitle {
+  font-size: 1rem;
+  color: var(--accent-color);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.explore-title {
+  font-size: 2.5rem;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+}
+
+.explore-description {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.explore-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.explore-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.explore-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: var(--shadow-medium);
+}
+
+.explore-card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.explore-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition);
+}
+
+.explore-card:hover .explore-card-image img {
+  transform: scale(1.1);
+}
+
+.explore-card-title {
+  padding: 1.5rem;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .explore-title {
+    font-size: 2rem;
+  }
+  
+  .explore-description {
+    font-size: 1rem;
+  }
+  
+  .explore-cards {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .explore-card-title {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .explore-title {
+    font-size: 1.75rem;
+  }
+  
+  .explore-description {
+    font-size: 0.9rem;
+  }
+}
+
+/* src/components/Explore.css */
+
+/* Enhanced background for depth */
+.explore {
+  background: radial-gradient(circle at 50% 0%, var(--footer-bg), var(--background-color) 60%);
+}
+
+.explore-header {
+  margin-bottom: 4rem;
+}
+
+/* Redesigned subtitle with a "pill" style */
+.explore-subtitle {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
+
+.explore-subtitle span {
+  background-color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  box-shadow: var(--shadow-light);
+  color: var(--accent-color);
+}
+
+.explore-title {
+  font-size: 2.8rem;
+  color: var(--text-dark);
+  margin-bottom: 1.5rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.explore-description {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.explore-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem; /* Increased gap for a more spacious feel */
+  margin-top: 3rem;
+}

@@ -1,0 +1,9 @@
+.review-form-container {
+  background: var(--footer-bg);
+  padding: 2rem;
+  border-radius: 15px;
+  margin-bottom: 3rem;
+}
+.review-form { display: flex; flex-direction: column; gap: 1rem; }
+.review-form textarea, .review-form input, .review-form select { width: 100%; padding: 0.75rem; border: 1px solid #d0c8b8; border-radius: 5px; }
+.review-error { color: #c0392b; }

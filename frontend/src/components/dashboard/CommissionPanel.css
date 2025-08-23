@@ -1,0 +1,46 @@
+/* src/components/CommissionPanel.css */
+.commission-panel {
+  padding: 1.5rem;
+  background-color: var(--footer-bg);
+  border-radius: 15px;
+  height: 100%;
+}
+
+.commission-panel h4 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid #d0c8b8;
+  padding-bottom: 1rem;
+}
+
+.no-commissions {
+  color: var(--text-muted);
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.commission-item {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+  margin-bottom: 1rem;
+}
+
+.commission-item h5 {
+  margin-top: 0;
+}
+.reviewed-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  background-color: #e8f5e9; /* A light green */
+  color: #2e7d32; /* A dark green */
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-align: center;
+}
+.commission-status-box { margin-bottom: 1rem; }
+.commission-price { font-weight: bold; font-size: 1.2rem; margin-bottom: 1rem; }
+.commission-actions .btn { width: 100%; font-size: 0.9rem; }
