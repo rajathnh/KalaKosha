@@ -26,6 +26,12 @@ import CreateCoursePage from './pages/CreateCoursePage';
 import CreateBlogPage from './pages/CreateBlogPage'; 
 import SingleBlogPostPage from './pages/SingleBlogPostPage';
 import BlogListPage from './pages/BlogListPage';
+
+// --- NEW IMPORTS FOR THE DISCOVER SECTION ---
+import DiscoverPage from './pages/DiscoverPage';
+import ArtFormDetailPage from './pages/ArtFormDetailPage';
+
+
 function App() {
   return (
     <div className="App">
@@ -34,6 +40,11 @@ function App() {
         <Routes>
           {/* --- Public Routes --- */}
           <Route path="/" element={<HomePage />} />
+
+          {/* --- NEW ROUTES FOR THE DISCOVER SECTION --- */}
+          <Route path="/discover" element={<DiscoverPage />} />
+          <Route path="/discover/:artFormId" element={<ArtFormDetailPage />} />
+
           <Route path="/artworks" element={<ArtworkListPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterGateway />} />
@@ -45,44 +56,45 @@ function App() {
           <Route path="/courses/:id" element={<SingleCoursePage />} />
           <Route path="/blog/:id" element={<SingleBlogPostPage />} />
           <Route path="/blog" element={<BlogListPage />} />
+
           {/* --- Protected Routes (to be built) --- */}
           <Route 
-    path="/checkout/:artworkId" // The URL will contain the ID of the artwork to buy
-    element={
-      <ProtectedRoute>
-        <CheckoutPage />
-      </ProtectedRoute>
-    } 
-  />
-  <Route 
+            path="/checkout/:artworkId" // The URL will contain the ID of the artwork to buy
+            element={
+              <ProtectedRoute>
+                <CheckoutPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/checkout/course/:courseId" 
             element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} 
           />
-<Route 
-    path="/chat" 
-    element={
-      <ProtectedRoute>
-        <ChatPage />
-      </ProtectedRoute>
-    } 
-  />
-  <Route 
-    path="/courses/create" 
-    element={
-      <ProtectedRoute roles={['artist']}>
-        <CreateCoursePage />
-      </ProtectedRoute>
-    } 
-  />
-   <Route 
-    path="/blog/create" 
-    element={
-      <ProtectedRoute roles={['artist']}>
-        <CreateBlogPage />
-      </ProtectedRoute>
-    } 
-  />
-   <Route 
+          <Route 
+            path="/chat" 
+            element={
+              <ProtectedRoute>
+                <ChatPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/courses/create" 
+            element={
+              <ProtectedRoute roles={['artist']}>
+                <CreateCoursePage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/blog/create" 
+            element={
+              <ProtectedRoute roles={['artist']}>
+                <CreateBlogPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/chat/:recipientId" // Change this from "/chat"
             element={
               <ProtectedRoute>
@@ -90,22 +102,22 @@ function App() {
               </ProtectedRoute>
             } 
           />
-  <Route 
-    path="/dashboard" 
-    element={
-      <ProtectedRoute>
-        <DashboardPage />
-      </ProtectedRoute>
-    } 
-  />
-<Route 
-    path="/artworks/create" 
-    element={
-      <ProtectedRoute roles={['artist']}> {/* <-- ONLY artists can access this */}
-        <CreateArtworkPage />
-      </ProtectedRoute>
-    } 
-  />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/artworks/create" 
+            element={
+              <ProtectedRoute roles={['artist']}> {/* <-- ONLY artists can access this */}
+                <CreateArtworkPage />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
         
       </main>

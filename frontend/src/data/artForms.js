@@ -40,7 +40,7 @@ export const artForms = [
     id: 'madhubani-painting',
     name: 'Madhubani Painting',
     region: 'Bihar',
-    thumbnail: '/artImages/madhu1.jpg',
+    thumbnail: '/artImages/madhu1.png',
     galleryImages: [
       '/artImages/madhu2.jpg',
       '/artImages/madhu3.jpg',
@@ -202,8 +202,8 @@ export const artForms = [
     thumbnail: '/artImages/phad1.jpg',
     galleryImages: [
       '/artImages/phad2.jpg',
-      '/artImages/phad3.jpg',
-      '/artImages/phad4.jpg'
+      '/artImages/phad3.jpeg',
+      '/artImages/phad4.jpeg'
     ],
     description: 'A narrative scroll painting tradition depicting the heroic deeds of folk deities like Pabuji and Devnarayan.',
     materials: 'Natural pigments on a hand-spun cloth (phad) stiffened with starch.',
@@ -228,7 +228,7 @@ export const artForms = [
     galleryImages: [
       '/artImages/mini2.jpg',
       '/artImages/mini3.jpg',
-      '/artImages/mini4.jpg'
+      '/artImages/mini4.jpeg'
     ],
     description: 'A broad genre of highly detailed and intricate paintings of a small size, with major schools like Mughal and Rajasthani.',
     materials: 'Natural stone pigments, often with gold and silver, on paper or ivory.',
@@ -252,11 +252,11 @@ export const artForms = [
     id: 'pattachitra',
     name: 'Pattachitra',
     region: 'Odisha',
-    thumbnail: '/artImages/patta1.jpg',
+    thumbnail: '/artImages/patta4.jpg',
     galleryImages: [
+      '/artImages/patta3.jpeg',
       '/artImages/patta2.jpg',
-      '/artImages/patta3.jpg',
-      '/artImages/patta4.jpg'
+      '/artImages/patta1.png'
     ],
     description: 'A traditional, cloth-based scroll painting from Odisha, known for its mythological narratives and decorative borders.',
     materials: 'Natural pigments on a cloth canvas (patta) coated with a tamarind seed paste.',
