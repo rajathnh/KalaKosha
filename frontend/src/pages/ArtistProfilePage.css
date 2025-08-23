@@ -1,9 +1,31 @@
 /* src/pages/ArtistProfilePage.css */
-.artist-header {
-  background: var(--footer-bg);
+
+/* --- Main Layout --- */
+.profile-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr; /* Sidebar width and main content */
+  gap: 4rem;
+  align-items: flex-start; /* Aligns items to the top */
+}
+
+/* --- Left "Sticky" Sidebar --- */
+.profile-sidebar {
+  position: -webkit-sticky; /* For Safari */
+  position: sticky;
+  top: 120px; /* 80px for navbar + 40px margin */
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;  
+  border-radius: 15px;
+
+}
+
+.sidebar-content {
+  background: white;
+  padding: 2rem 2rem 3rem;
+  border-radius: 15px;
+  box-shadow: var(--shadow-medium);
   text-align: center;
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+
 }
 
 .artist-avatar {
@@ -11,67 +33,185 @@
   height: 150px;
   border-radius: 50%;
   object-fit: cover;
-  margin: 0 auto 1.5rem;
-  border: 5px solid white;
-  box-shadow: var(--shadow-medium);
+  margin: 0 auto 1rem;
+  border: 6px solid white;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  display: block;
 }
 
-.artist-header h1 {
-  font-size: 3rem;
+.artist-name {
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-dark);
+}
+
+.artist-badges-container {
+  margin-bottom: 1rem;
+  min-height: 35px;
 }
 
 .artist-specialization {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: var(--text-muted);
+  font-style: italic;
   margin-bottom: 1rem;
 }
 
 .artist-rating {
   display: inline-block;
-  background: var(--accent-color);
-  color: white;
-  padding: 0.5rem 1rem;
+  background: var(--footer-bg);
+  color: var(--text-dark);
+  padding: 0.4rem 1rem;
   border-radius: 20px;
   margin-bottom: 1.5rem;
+  font-size: 0.9rem;
 }
 
 .artist-bio {
-  max-width: 700px;
-  margin: 0 auto 2rem;
+  text-align: left;
   line-height: 1.7;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 2rem;
+}
+
+.contact-btn {
+  width: 100%; /* Make the button full-width */
+}
+
+/* --- Right Main Content --- */
+.profile-main-content {
+  min-width: 0; /* Prevents grid blowout */
 }
 
 .profile-section {
   margin-bottom: 4rem;
 }
 
-.profile-section h2 {
-  text-align: center;
+.section-title {
+  font-size: 1.3rem;
+  color: var(--text-dark);
+  padding-bottom: 1rem;
   margin-bottom: 2rem;
-  font-size: 2rem;
+  border-bottom: 2px solid var(--footer-bg);
 }
 
-.profile-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-}
-
-.sold-price {
-  font-weight: 600;
+.empty-state {
+  text-align: center;
   color: var(--text-muted);
-  margin-top: 1rem;
-  align-self: flex-end;
+  padding: 2rem;
+  background: var(--footer-bg);
+  border-radius: 10px;
 }
 
-.artist-header h1 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem; /* Reduce margin to bring badges closer */
+/* --- Specific Section Styles --- */
+.courses-gallery {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  width: auto;
+  height: auto;
+  position: relative;
+  margin-bottom: 2rem;
 }
 
-.artist-badges-container {
-    margin-bottom: 1rem;
-    min-height: 25px; /* Prevents layout shift if there are no badges */
+@keyframes coursesSlider {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
 }
-/* We can reuse the artwork-card and review-card styles from other pages */
-/* If you want to keep CSS separate, copy those styles here */
+
+.courses-gallery-inner {
+  display: flex;
+  flex-direction: row;
+  width: auto;
+}
+
+.courses-gallery .course-card-image-wrapper {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.courses-gallery .course-card-image-wrapper img {
+  width: 350px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 18px;
+}
+.sold-gallery {
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  width: 320px;
+  height: 320px;
+  position: relative;
+}
+
+@keyframes soldSlider {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+.sold-gallery-inner {
+  display: flex;
+  flex-direction: row;
+  width: max-content;
+  animation: soldSlider 8s linear infinite;
+}
+
+.sold-gallery .artwork-card-image-wrapper {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sold-gallery .artwork-card-image-wrapper img {
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 22px;
+}
+
+.sold-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--primary-color);
+  padding: 0.5rem 2rem;
+  font-weight: 700;
+  font-size: 1.2rem;
+  border-radius: 5px;
+  letter-spacing: 2px;
+  backdrop-filter: blur(2px);
+  z-index: 3;
+}
+
+.artwork-card.sold .artwork-artist.sold-price {
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 992px) {
+  .profile-layout {
+    grid-template-columns: 1fr; /* Stack columns on smaller screens */
+  }
+
+  .profile-sidebar {
+    position: static; /* Un-stick the sidebar */
+    max-height: none;
+    overflow-y: visible;
+  }
+  
+  .artist-avatar {
+    margin-top: 0; /* Reset avatar position */
+  }
+}

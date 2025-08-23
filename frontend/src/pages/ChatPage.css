@@ -8,7 +8,7 @@
   /* --- KEY FIXES --- */
   height: calc(100vh - 80px); /* 100% of viewport height MINUS the navbar height */
   padding: 1.5rem; /* Give some space around the entire layout */
-  max-width: 1600px;
+  max-width: 1300px;
   margin: 0 auto;
   /* Prevent the entire layout from scrolling */
   overflow: hidden;
@@ -18,11 +18,10 @@
   display: flex;
   flex-direction: column;
   height: 100%; /* Make the chat container fill its grid cell vertically */
-  background: white;
+    background: var(--footer-bg);
   border-radius: 15px;
-  box-shadow: var(--shadow-light);
-  overflow: hidden; /* Prevent content from spilling out */
-  /* Ensure this container doesn't cause page scroll */
+
+  overflow: hidden;
   min-height: 0;
 }
 
@@ -199,6 +198,8 @@
 }
 
 .commission-panel-container {
+  background: #fff;
+  border-radius: 15px;
   height: 100%; /* Make the panel fill its grid cell vertically */
   overflow-y: auto; /* The panel gets ITS OWN scrollbar */
   overflow-x: hidden; /* Prevent horizontal scroll */

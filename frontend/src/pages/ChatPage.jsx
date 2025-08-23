@@ -59,25 +59,38 @@ const ChatPage = () => {
             setPageLoading(false);
             return;
         }
-        const initializeChat = async () => {
-            setPageLoading(true);
-            setError(null);
-            try {
-                const recipientFromState = location.state?.recipient;
-                const recipientModel = recipientFromState?.role === 'artist' ? 'Artist' : 'User';
-                const response = await apiClient.post('/chat/conversations', { recipientId, recipientModel });
-                const convo = response.data.conversation;
-                setConversationId(convo._id);
-                const otherParticipant = convo.participants.find(p => p && p._id !== user.userId);
-                if (otherParticipant) { setRecipient(otherParticipant); } 
-                else { throw new Error("Could not identify the other chat participant."); }
-            } catch (err) {
-                setError('Failed to load conversation. Please try again later.');
-            } finally {
-                setPageLoading(false);
-            }
-        };
-        initializeChat();
+                const initializeChat = async () => {
+                        setPageLoading(true);
+                        setError(null);
+                        try {
+                                const recipientFromState = location.state?.recipient;
+                                const recipientModel = recipientFromState?.role === 'artist' ? 'Artist' : 'User';
+                                const response = await apiClient.post('/chat/conversations', { recipientId, recipientModel });
+                                const convo = response.data.conversation;
+                                setConversationId(convo._id);
+                                const otherParticipantId = convo.participants.find(p => p && p !== user.userId && p._id === undefined ? p : p._id !== user.userId ? p._id : null);
+                                // If the participant is an object, use _id, else use the string
+                                let idToFetch = otherParticipantId;
+                                if (typeof otherParticipantId === 'object' && otherParticipantId._id) {
+                                    idToFetch = otherParticipantId._id;
+                                }
+                                // Fetch full recipient details
+                                let recipientDetails = null;
+                                if (recipientModel === 'Artist') {
+                                    const artistRes = await apiClient.get(`/artists/${idToFetch}`);
+                                    recipientDetails = artistRes.data.profile.artist;
+                                } else {
+                                    const userRes = await apiClient.get(`/users/${idToFetch}`);
+                                    recipientDetails = userRes.data.user;
+                                }
+                                setRecipient(recipientDetails);
+                        } catch (err) {
+                                setError('Failed to load conversation. Please try again later.');
+                        } finally {
+                                setPageLoading(false);
+                        }
+                };
+                initializeChat();
     }, [recipientId, user, authLoading, location.state, navigate]);
 
     // 2. Set up polling for new messages and commissions
@@ -186,7 +199,6 @@ const ChatPage = () => {
                 onClose={() => setIsModalOpen(false)}
                 onSubmit={handleCreateCommission}
             />
-            
             <div className="chat-page-layout section">
                 <div className="chat-container">
                     <div className="chat-header">
