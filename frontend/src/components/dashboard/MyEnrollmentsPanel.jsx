@@ -30,7 +30,7 @@ const MyEnrollmentsPanel = () => {
     <div className="my-enrollments-panel">
       <h2>My Enrollments</h2>
       <p>All the courses you are currently enrolled in.</p>
- <hr className="message1"/>
+      <hr />
       {enrolledCourses.length > 0 ? (
         <div className="artwork-grid"> {/* Reusing the same grid style */}
           {enrolledCourses.map(({ product }) => (

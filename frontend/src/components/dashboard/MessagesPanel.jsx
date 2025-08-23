@@ -1,14 +1,13 @@
 // src/components/dashboard/MessagesPanel.jsx
 import React from 'react';
 import ConversationList from '../ConversationList';
-import '../../pages/ArtworkListPage.css';
 
 const MessagesPanel = () => {
   return (
     <div className="messages-panel">
       <h2>My Messages</h2>
       <p>Select a conversation to view your messages.</p>
-      <hr className="message1" />
+      <hr />
       <ConversationList />
     </div>
   );

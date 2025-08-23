@@ -106,7 +106,7 @@ const getUserConversations = async (req, res) => {
     const conversations = await Conversation.find({ participants: userId })
         .populate({
             path: 'participants',
-            select: 'name profilePicture', // Get the other person's details
+            select: 'name profilePicture role', // Get the other person's details
         })
         .sort('-updatedAt'); // Show most recent conversations first
 
