@@ -6,7 +6,7 @@ const CustomError = require('../errors');
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const { checkPermissions } = require('../utils');
-
+const mongoose = require('mongoose');
 // --- CREATE ARTWORK (Artist only) ---
 const createArtwork = async (req, res) => {
   // The artist's ID is attached to the request by our authentication middleware
@@ -133,11 +133,34 @@ const deleteArtwork = async (req, res) => {
   await artwork.deleteOne(); // Mongoose V6+
   res.status(StatusCodes.OK).json({ msg: 'Success! Artwork removed.' });
 };
+const getCurrentArtistArtworks = async (req, res) => {
+    // Log the user ID we are receiving from the token middleware
+    console.log(`[my-artworks] Fetching artworks for artist ID: ${req.user.userId}`);
+    
+    const artistId = req.user.userId;
 
+    // --- THIS IS THE MOST ROBUST WAY TO QUERY ---
+    // Even if artistId is a string, Mongoose will handle the cast to ObjectId here.
+    // If it fails, it will throw a catchable error.
+    try {
+        const artworks = await Artwork.find({ artist: artistId }).sort('-createdAt');
+        
+        // Log what the database returned
+        console.log(`[my-artworks] Mongoose query found ${artworks.length} artworks.`);
+        
+        res.status(StatusCodes.OK).json({ artworks, count: artworks.length });
+
+    } catch (error) {
+        // This will catch any errors if the ID is malformed or another DB issue occurs
+        console.error('[my-artworks] An error occurred during the database query:', error);
+        throw new CustomError.InternalServerError('Failed to fetch artworks.');
+    }
+};
 module.exports = {
   createArtwork,
   getAllArtworks,
   getSingleArtwork,
   updateArtwork,
   deleteArtwork,
+  getCurrentArtistArtworks
 };

@@ -13,13 +13,14 @@ const {
   getSingleCourse,
   updateCourse,
   deleteCourse,
+  getCurrentArtistCourses
 } = require('../controllers/courseController');
 
 router
   .route('/')
   .post([authenticateUser, authorizePermissions('artist')], createCourse) // Only artists can create
   .get(getAllCourses); // Anyone can view all courses
-
+router.route('/my-courses').get([authenticateUser, authorizePermissions('artist')], getCurrentArtistCourses);
 router
   .route('/:id')
   .get(getSingleCourse) // Anyone can view a single course

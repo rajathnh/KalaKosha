@@ -13,13 +13,14 @@ const {
   getSingleBlogPost,
   updateBlogPost,
   deleteBlogPost,
+  getCurrentArtistBlogs
 } = require('../controllers/blogPostController');
 
 router
   .route('/')
   .post([authenticateUser, authorizePermissions('artist')], createBlogPost)
   .get(getAllBlogPosts);
-
+router.route('/my-blogs').get([authenticateUser, authorizePermissions('artist')], getCurrentArtistBlogs);
 router
   .route('/:id')
   .get(getSingleBlogPost)

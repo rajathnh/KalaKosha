@@ -13,13 +13,14 @@ const {
   getSingleArtwork,
   updateArtwork,
   deleteArtwork,
+  getCurrentArtistArtworks
 } = require('../controllers/artworkController');
 
 router
   .route('/')
   .post([authenticateUser, authorizePermissions('artist')], createArtwork) // Only artists can create
   .get(getAllArtworks); // Anyone can get all artworks
-
+router.route('/my-artworks').get([authenticateUser, authorizePermissions('artist')], getCurrentArtistArtworks);
 router
   .route('/:id')
   .get(getSingleArtwork) // Anyone can get a single artwork

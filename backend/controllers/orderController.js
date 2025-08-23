@@ -8,6 +8,7 @@ const { checkPermissions } = require('../utils');
 const Course = require('../models/Course');
 const Enrollment = require('../models/Enrollment');
 const Review = require('../models/Review'); 
+const mongoose = require('mongoose');
 // --- (ADMIN ONLY) GET ALL ORDERS ---
 const getAllOrders = async (req, res) => {
     const orders = await Order.find({});
@@ -27,16 +28,26 @@ const getSingleOrder = async (req, res) => {
     // Security check: ensure user is admin or owner of the order
     checkPermissions(req.user, order.user);
 
-    // Also fetch the items associated with this order
-    const orderItems = await OrderItem.find({ order: orderId });
+    // Fetch the items associated with this order
+    // And populate the product details for each item!
+    const orderItems = await OrderItem.find({ order: orderId }).populate({
+        path: 'product',
+        select: 'name image price' // Select the fields you want to show
+    });
 
     res.status(StatusCodes.OK).json({ order, orderItems });
 };
 
 
-// --- GET CURRENT USER'S ORDER HISTORY ---
+// --- GET CURRENT USER'S ORDER HISTORY (IMPROVED) ---
 const getCurrentUserOrders = async (req, res) => {
-    const orders = await Order.find({ user: req.user.userId });
+    console.log(`Fetching orders for user ID: ${req.user.userId}`); // Debug Log
+
+    // The fix is to ensure we are querying with a proper ObjectId
+    const orders = await Order.find({ user: new mongoose.Types.ObjectId(req.user.userId) });
+    
+    console.log(`Found ${orders.length} orders.`); // Debug Log
+
     res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
 
@@ -109,7 +120,24 @@ const createOrder = async (req, res) => {
     res.status(StatusCodes.CREATED).json({ order });
 };
 // In backend/controllers/orderController.js
+const getMyPurchasedItems = async (req, res) => {
+    // 1. Find all of the user's completed orders
+    const orders = await Order.find({ user: req.user.userId, status: { $in: ['paid', 'delivered'] } });
+    if (!orders.length) {
+        return res.status(StatusCodes.OK).json({ items: [] });
+    }
+    const orderIds = orders.map(o => o._id);
 
+    // 2. Find all order items linked to those orders and populate the product details
+    const items = await OrderItem.find({ order: { $in: orderIds } })
+        .populate({
+            path: 'product',
+            // We can also populate the artist of the product
+            populate: { path: 'artist', select: 'name' } 
+        });
+
+    res.status(StatusCodes.OK).json({ items });
+};
 const checkPurchaseStatus = async (req, res) => {
     const { productId, productType } = req.params;
     const { userId } = req.user;
@@ -152,5 +180,6 @@ module.exports = {
     getSingleOrder,
     getCurrentUserOrders,
     createOrder,
-    checkPurchaseStatus
+    checkPurchaseStatus,
+    getMyPurchasedItems
 };

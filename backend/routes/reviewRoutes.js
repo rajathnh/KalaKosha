@@ -10,15 +10,14 @@ const {
     deleteReview,
 } = require('../controllers/reviewController');
 
-// General route to create any review
 router.route('/').post(authenticateUser, createReview);
 
-// Routes to update/delete a specific review by its ID
+// Route to get all reviews for a specific item (this is generic but specific in its own way)
+router.route('/:onModel/:itemId').get(getReviewsForItem);
+
+// Route to manage a SINGLE review by its own ID (this is the most generic)
 router.route('/:id')
     .patch(authenticateUser, updateReview)
     .delete(authenticateUser, deleteReview);
-
-// Route to get all reviews for a specific item (artwork or course)
-router.route('/:onModel/:itemId').get(getReviewsForItem);
 
 module.exports = router;

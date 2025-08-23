@@ -69,22 +69,34 @@ const getSingleArtistProfile = async (req, res) => {
   }
 
   // 2. Use Promise.all to fetch all related content in parallel for performance
-  const artworksPromise = Artwork.find({ artist: artistId });
+  
+  // --- THIS IS THE KEY CHANGE ---
+  // Fetch artworks for sale
+  const artworksForSalePromise = Artwork.find({ artist: artistId, status: 'For Sale' });
+  // Fetch sold artworks
+  const artworksSoldPromise = Artwork.find({ artist: artistId, status: 'Sold' });
+  // --- END OF CHANGE ---
+  
   const coursesPromise = Course.find({ artist: artistId });
-  const blogPostsPromise = BlogPost.find({ artist: artistId }).sort('-createdAt');
+  const commissionReviewsPromise = CommissionReview.find({ artist: artistId })
+        .populate({ path: 'customer', select: 'name' })
+        .populate({ path: 'commission', select: 'title price' });
 
-  const [artworks, courses, blogPosts] = await Promise.all([
-    artworksPromise,
+  // Add the new promises to the Promise.all call
+  const [artworksForSale, artworksSold, courses, commissionReviews] = await Promise.all([
+    artworksForSalePromise,
+    artworksSoldPromise,
     coursesPromise,
-    blogPostsPromise,
+    commissionReviewsPromise,
   ]);
-
+  
   // 3. Combine everything into a single response object
   const profileData = {
     artist,
-    artworks,
+    artworksForSale, // Now a separate array
+    artworksSold,    // Now a separate array
     courses,
-    blogPosts,
+    commissionReviews,
   };
 
   res.status(StatusCodes.OK).json({ profile: profileData });

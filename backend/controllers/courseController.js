@@ -145,11 +145,15 @@ const deleteCourse = async (req, res) => {
   await course.deleteOne();
   res.status(StatusCodes.OK).json({ msg: 'Success! Course removed.' });
 };
-
+const getCurrentArtistCourses = async (req, res) => {
+    const courses = await Course.find({ artist: req.user.userId });
+    res.status(StatusCodes.OK).json({ courses, count: courses.length });
+};
 module.exports = {
   createCourse,
   getAllCourses,
   getSingleCourse,
   updateCourse,
   deleteCourse,
+  getCurrentArtistCourses
 };

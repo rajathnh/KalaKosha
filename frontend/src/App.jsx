@@ -21,6 +21,9 @@ import ChatPage from './pages/ChatPage';
 import DashboardPage from './pages/DashboardPage';
 import CourseListPage from './pages/CourseListPage';
 import SingleCoursePage from './pages/SingleCoursePage';
+import CreateArtworkPage from './pages/CreateArtworkPage';
+import CreateCoursePage from './pages/CreateCoursePage';
+import CreateBlogPage from './pages/CreateBlogPage'; 
 
 function App() {
   return (
@@ -60,6 +63,22 @@ function App() {
       </ProtectedRoute>
     } 
   />
+  <Route 
+    path="/courses/create" 
+    element={
+      <ProtectedRoute roles={['artist']}>
+        <CreateCoursePage />
+      </ProtectedRoute>
+    } 
+  />
+   <Route 
+    path="/blog/create" 
+    element={
+      <ProtectedRoute roles={['artist']}>
+        <CreateBlogPage />
+      </ProtectedRoute>
+    } 
+  />
    <Route 
             path="/chat/:recipientId" // Change this from "/chat"
             element={
@@ -76,7 +95,14 @@ function App() {
       </ProtectedRoute>
     } 
   />
-
+<Route 
+    path="/artworks/create" 
+    element={
+      <ProtectedRoute roles={['artist']}> {/* <-- ONLY artists can access this */}
+        <CreateArtworkPage />
+      </ProtectedRoute>
+    } 
+  />
         </Routes>
         
       </main>

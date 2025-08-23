@@ -1,0 +1,58 @@
+/* src/pages/FormPage.css */
+.form-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Align to top */
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+.form-container {
+  background: white;
+  padding: 2.5rem;
+  border-radius: 15px;
+  box-shadow: var(--shadow-medium);
+  width: 100%;
+  max-width: 700px;
+}
+
+.form-container h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.form-container p {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d0c8b8;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: var(--font-body);
+}
+
+.form-error {
+  color: #c0392b;
+  text-align: center;
+}

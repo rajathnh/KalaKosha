@@ -131,11 +131,15 @@ const deleteBlogPost = async (req, res) => {
   await blogPost.deleteOne();
   res.status(StatusCodes.OK).json({ msg: 'Success! Blog post removed.' });
 };
-
+const getCurrentArtistBlogs = async (req, res) => {
+    const blogPosts = await BlogPost.find({ artist: req.user.userId }).sort('-createdAt');
+    res.status(StatusCodes.OK).json({ blogPosts, count: blogPosts.length });
+};
 module.exports = {
   createBlogPost,
   getAllBlogPosts,
   getSingleBlogPost,
   updateBlogPost,
   deleteBlogPost,
+  getCurrentArtistBlogs
 };

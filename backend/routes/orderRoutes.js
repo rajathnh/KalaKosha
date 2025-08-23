@@ -11,7 +11,8 @@ const {
   getAllOrders,    // Optional: For admin use
   getSingleOrder,
   getCurrentUserOrders,
-  checkPurchaseStatus
+  checkPurchaseStatus,
+  getMyPurchasedItems
 } = require('../controllers/orderController'); // We'll add these new functions to the controller
 
 
@@ -30,6 +31,7 @@ router.route('/').get([authenticateUser, authorizePermissions('admin')], getAllO
 // --- Route for the current logged-in user to see their own order history ---
 // GET /api/v1/orders/my-orders
 router.route('/my-orders').get(authenticateUser, getCurrentUserOrders);
+router.route('/my-collection').get(authenticateUser, getMyPurchasedItems);
 router.route('/status/:productType/:productId').get(authenticateUser, checkPurchaseStatus);
 
 // --- Route to view a single specific order ---
