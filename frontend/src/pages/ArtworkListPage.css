@@ -2,7 +2,8 @@
 
 /* --- Page Layout & Header --- */
 .artwork-list-page {
-  background: linear-gradient(to bottom, var(--footer-bg), var(--background-color) 400px);
+   background: linear-gradient(135deg, #e6c09a 0%, #faf6f1 50%, #957333 100%);
+
 }
 
 .page-header {

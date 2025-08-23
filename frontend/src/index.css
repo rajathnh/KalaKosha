@@ -34,7 +34,8 @@ body {
   font-family: var(--font-body);
   line-height: 1.6;
   color: var(--text-dark);
-  background-color: var(--background-color);
+  background: linear-gradient(135deg, #a36d37 0%, #faf6f1 50%, #957843 100%);
+  background-attachment: fixed;
 }
 
 h1, h2, h3, h4, h5, h6 {
