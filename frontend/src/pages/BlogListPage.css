@@ -3,8 +3,8 @@
   text-align: center;
   margin-bottom: 3rem;
 }
-.blog-header h1 { font-size: 2.8rem; }
-.blog-header p { font-size: 1.2rem; color: var(--text-muted); }
+.blog-header h1 { font-size: 3.2rem; }
+.blog-header p { font-size: 1.5rem; color: var(--text-muted); }
 
 .blog-grid {
   display: grid;
@@ -46,13 +46,13 @@
 .blog-card-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-size: 1.1rem;
   color: var(--text-muted);
   margin-bottom: 1rem;
 }
 
 .blog-card-title {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   line-height: 1.4;
   color: var(--text-dark);
 }
