@@ -260,3 +260,28 @@
   color: white;
   transform: scale(1.1);
 }
+.profile-main-content{
+   overflow-y: auto;
+  height: 100%;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+.profile-sidebar{
+  max-width:530px;
+  max-height:580px;
+  margin:0rem 2rem;
+   overflow-y: auto;
+  height: 100%;
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
