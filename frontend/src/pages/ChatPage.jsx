@@ -1,117 +1,114 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/axios';
 import './ChatPage.css';
 import CommissionFormModal from '../components/CommissionFormModal';
 import CommissionPanel from '../components/CommissionPanel';
+
 const ChatPage = () => {
     // --- STATE MANAGEMENT ---
     const { user, loading: authLoading } = useAuth();
     const location = useLocation();
     const { recipientId } = useParams();
     const navigate = useNavigate();
-
-    // Data State
     const [recipient, setRecipient] = useState(null);
     const [conversationId, setConversationId] = useState(null);
     const [messages, setMessages] = useState([]);
     const [commissions, setCommissions] = useState([]);
-    
-    // UI State
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newMessage, setNewMessage] = useState('');
     const [imageFile, setImageFile] = useState(null);
     const [pageLoading, setPageLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    // Refs
     const messagesEndRef = useRef(null);
     const fileInputRef = useRef(null);
+const [isInitialLoad, setIsInitialLoad] = useState(true);
+    // --- DATA FETCHING FUNCTIONS ---
+    const fetchCommissions = useCallback(async () => {
+        if (!conversationId) return;
+        try {
+            const response = await apiClient.get(`/commissions/conversation/${conversationId}`);
+            setCommissions(response.data.commissions || []);
+        } catch (err) { 
+            console.error('Polling commissions failed:', err); 
+        }
+    }, [conversationId]);
+
+    const fetchMessages = useCallback(async () => {
+        if (!conversationId) return;
+        try {
+            const response = await apiClient.get(`/chat/conversations/${conversationId}/messages`);
+            setMessages(response.data.messages || []);
+        } catch (err) { console.error('Polling messages failed:', err); }
+    }, [conversationId]);
+
 
     // --- EFFECTS ---
 
     // 1. Initialize the chat session
     useEffect(() => {
-        if (authLoading) {
-            console.log("ChatPage waiting for auth...");
-            return; // Wait until the authentication check is complete
-        }
-        if (!user) {
-            console.log("No user found, redirecting to login.");
-            navigate('/login');
-            return;
-        }
+        if (authLoading) return;
+        if (!user) { navigate('/login'); return; }
         if (!recipientId) {
-            console.log("No recipient ID in URL.");
             setError("Cannot start a chat without a recipient.");
             setPageLoading(false);
             return;
         }
-
         const initializeChat = async () => {
-            console.log("Initializing chat with recipient:", recipientId);
             setPageLoading(true);
             setError(null);
             try {
                 const recipientFromState = location.state?.recipient;
                 const recipientModel = recipientFromState?.role === 'artist' ? 'Artist' : 'User';
-                
                 const response = await apiClient.post('/chat/conversations', { recipientId, recipientModel });
                 const convo = response.data.conversation;
-                console.log("Conversation loaded:", convo._id);
                 setConversationId(convo._id);
-
                 const otherParticipant = convo.participants.find(p => p && p._id !== user.userId);
-                if (otherParticipant) {
-                    setRecipient(otherParticipant);
-                } else { throw new Error("Could not identify the other chat participant."); }
-
+                if (otherParticipant) { setRecipient(otherParticipant); } 
+                else { throw new Error("Could not identify the other chat participant."); }
             } catch (err) {
-                console.error('CRITICAL: Failed to initialize chat session', err);
                 setError('Failed to load conversation. Please try again later.');
             } finally {
-                console.log("Finished initialization, setting page loading to false.");
                 setPageLoading(false);
             }
         };
-
         initializeChat();
     }, [recipientId, user, authLoading, location.state, navigate]);
 
-    // 2. Poll for messages
+    // 2. Set up polling for new messages and commissions
     useEffect(() => {
         if (!conversationId) return;
-        const fetchMessages = async () => {
-            try {
-                const response = await apiClient.get(`/chat/conversations/${conversationId}/messages`);
-                setMessages(response.data.messages || []);
-            } catch (err) { console.error('Polling messages failed:', err); }
-        };
+        // Fetch immediately when conversation starts
         fetchMessages();
-        const interval = setInterval(fetchMessages, 5000);
-        return () => clearInterval(interval);
-    }, [conversationId]);
-
-    // 3. Poll for commissions
-    useEffect(() => {
-        if (!conversationId) return;
-        const fetchCommissions = async () => {
-            try {
-                const response = await apiClient.get(`/commissions/conversation/${conversationId}`);
-                setCommissions(response.data.commissions || []);
-            } catch (err) { console.error('Polling commissions failed:', err); }
-        };
         fetchCommissions();
-        const interval = setInterval(fetchCommissions, 5000);
+        // Then set up the interval to poll every 5 seconds
+        const interval = setInterval(() => {
+            fetchMessages();
+            fetchCommissions();
+        }, 5000);
+        // Clean up the interval when the component unmounts
         return () => clearInterval(interval);
-    }, [conversationId]);
+    }, [conversationId, fetchMessages, fetchCommissions]);
 
-    // 4. Auto-scroll
+
+    // --- START OF THE SCROLLING FIX ---
+
+    // 3. Smart Initial Scroll Effect
+    // This effect runs ONLY ONCE when the conversation ID is first available.
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages, commissions]);
+        // --- NEW FIX PART 3: This condition is now much smarter ---
+        // Scroll to bottom ONLY if it's the very first load OR if a new message has arrived.
+        // We check the length of messages to see if it changed.
+        if (!isInitialLoad) {
+             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, [messages.length, isInitialLoad]);
+
+    // The old auto-scroll useEffect that caused the bug has been completely removed.
     
+    // --- END OF THE SCROLLING FIX ---
+
 
     // --- HANDLER FUNCTIONS ---
     const handleFileChange = (e) => setImageFile(e.target.files[0]);
@@ -119,22 +116,32 @@ const ChatPage = () => {
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if ((!newMessage.trim() && !imageFile) || !conversationId) return;
+        
         const formData = new FormData();
         formData.append('content', newMessage);
         if (imageFile) formData.append('image', imageFile);
+        
         setNewMessage('');
         setImageFile(null);
         if(fileInputRef.current) fileInputRef.current.value = "";
+        
         try {
             await apiClient.post(`/chat/conversations/${conversationId}/messages`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
-        } catch (err) { console.error('Failed to send message', err); }
+            
+            // --- FIX PART 2: Manually trigger scroll after sending ---
+            await fetchMessages(); // Instantly get the message we just sent
+            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); // Scroll down smoothly
+        } catch (err) { 
+            console.error('Failed to send message', err); 
+        }
     };
     
     const handleAcceptCommission = async (commissionId) => {
         try {
             await apiClient.post(`/commissions/${commissionId}/accept`);
+            fetchCommissions(); // Manually refresh commission status
         } catch(err) {
             alert('Could not accept the commission.');
             console.error(err);
@@ -147,6 +154,7 @@ const ChatPage = () => {
                 ...commissionData, customerId: recipientId, conversationId: conversationId,
             });
             setIsModalOpen(false);
+            fetchCommissions(); // Manually refresh to show new offer
         } catch (err) {
             alert('Error: Could not create commission offer.');
             console.error(err);
@@ -166,7 +174,6 @@ const ChatPage = () => {
 
     return (
         <>
-            {/* The modal for creating commissions lives outside the main layout */}
             <CommissionFormModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)}
@@ -174,7 +181,6 @@ const ChatPage = () => {
             />
             
             <div className="chat-page-layout section">
-                {/* --- MAIN CHAT CONTAINER (LEFT COLUMN) --- */}
                 <div className="chat-container">
                     <div className="chat-header">
                         {recipient && (
@@ -187,7 +193,6 @@ const ChatPage = () => {
                     <div className="chat-messages-container">
                         {chatFeed.length > 0 ? (
                             chatFeed.map((item) => {
-                                // Check if the item is a commission to render the special card
                                 if (item.status && item.status === 'Offered' && user.role !== 'artist') {
                                     return (
                                         <div key={`comm-${item._id}`} className="commission-card">
@@ -200,7 +205,6 @@ const ChatPage = () => {
                                         </div>
                                     );
                                 }
-                                // Check if the item is a message
                                 if (item.content || item.imageUrl) {
                                     const msg = item;
                                     return (
@@ -210,7 +214,7 @@ const ChatPage = () => {
                                         </div>
                                     );
                                 }
-                                return null; // Don't render commissions with other statuses in the main feed
+                                return null;
                             })
                         ) : (
                             !pageLoading && <p className="no-messages">No messages yet. Say hello!</p>
@@ -218,7 +222,6 @@ const ChatPage = () => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Button for the artist to open the commission creation modal */}
                     {user.role === 'artist' && (
                         <div className="create-commission-area">
                             <button onClick={() => setIsModalOpen(true)} className="btn btn-outline">
@@ -227,7 +230,6 @@ const ChatPage = () => {
                         </div>
                     )}
                     
-                    {/* The message input form */}
                     <form onSubmit={handleSendMessage} className="chat-input-form">
                         <input type="file" ref={fileInputRef} id="file-input" style={{ display: 'none' }} onChange={handleFileChange} accept="image/*" />
                         <label htmlFor="file-input" className="file-input-label">📎</label>
@@ -236,9 +238,11 @@ const ChatPage = () => {
                     </form>
                 </div>
 
-                {/* --- COMMISSION MANAGEMENT PANEL (RIGHT COLUMN) --- */}
                 <aside className="commission-panel-container">
-                    <CommissionPanel commissions={commissions} onUpdate={() => { /* Polling handles updates */ }} />
+                    <CommissionPanel 
+                        commissions={commissions} 
+                        onUpdate={fetchCommissions} 
+                    />
                 </aside>
             </div>
         </>

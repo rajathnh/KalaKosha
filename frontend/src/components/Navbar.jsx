@@ -63,6 +63,7 @@ const Navbar = () => {
             {/* MERGED: Explore Art is a Link to a separate page */}
             <Link to="/artworks">Explore Art</Link>
             <Link to="/courses">Courses</Link>
+            <Link to="/blog">Blog</Link>
           </div>
         </div>
 
@@ -70,7 +71,9 @@ const Navbar = () => {
           {/* MERGED: Your authentication logic is applied here */}
           {user ? (
             <>
-              <span>Hello, {user.name}</span>
+               <Link to="/dashboard" className="navbar-user-link">
+                Hello, {user.name}
+              </Link>
               <button onClick={handleLogout} className="btn btn-primary navbar-btn">
                 Log Out
               </button>

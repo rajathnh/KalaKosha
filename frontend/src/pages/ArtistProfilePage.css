@@ -57,5 +57,11 @@
   gap: 2rem;
 }
 
+.sold-price {
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-top: 1rem;
+  align-self: flex-end;
+}
 /* We can reuse the artwork-card and review-card styles from other pages */
 /* If you want to keep CSS separate, copy those styles here */

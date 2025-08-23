@@ -22,4 +22,15 @@ const CommissionSchema = new mongoose.Schema({
   conversationId: { type: mongoose.Schema.ObjectId, ref: 'Conversation', required: true },
 }, { timestamps: true });
 
+CommissionSchema.virtual('review', {
+  ref: 'CommissionReview', // The model to use
+  localField: '_id',       // Find CommissionReview where...
+  foreignField: 'commission', // ...the 'commission' field...
+  justOne: true,           // ...matches this document's _id. We only expect one.
+});
+
+// Ensure virtuals are included when we convert the document to JSON
+CommissionSchema.set('toJSON', { virtuals: true });
+CommissionSchema.set('toObject', { virtuals: true });
+
 module.exports = mongoose.model('Commission', CommissionSchema);

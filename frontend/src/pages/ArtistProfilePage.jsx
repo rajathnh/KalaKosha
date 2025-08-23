@@ -1,24 +1,23 @@
-// src/pages/ArtistProfilePage.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, Link,useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import apiClient from '../api/axios';
 import './ArtistProfilePage.css';
+// Reusing these styles for the cards
+import './ArtworkListPage.css'; 
 
 const ArtistProfilePage = () => {
   const { id: artistId } = useParams();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-    const { user } = useAuth(); // Get the current user
+  const { user } = useAuth();
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchArtistProfile = async () => {
-      // Reset state on new ID
       setLoading(true);
       setError(null);
-      setProfileData(null);
-      
       try {
         const response = await apiClient.get(`/artists/${artistId}`);
         setProfileData(response.data.profile);
@@ -31,35 +30,30 @@ const ArtistProfilePage = () => {
     };
     fetchArtistProfile();
   }, [artistId]);
-const handleContact = () => {
-    // We pass the entire artist object in the navigation state
-    const artistToContact = profileData.artist; 
 
+  const handleContact = () => {
+    const artistToContact = profileData.artist;
     if (!user) {
-      // If not logged in, redirect to login and remember to go to chat with this artist later
-      navigate('/login', { state: { from: { pathname: '/chat' }, artist: artistToContact } });
+      navigate('/login', { 
+        state: { 
+          from: { pathname: `/chat/${artistToContact._id}` }, 
+          recipient: artistToContact 
+        } 
+      });
     } else {
-      // If logged in, go directly to chat, passing the artist's info
       navigate(`/chat/${artistToContact._id}`, { state: { recipient: artistToContact } });
     }
   };
-  // --- BULLETPROOF RENDER LOGIC ---
 
-  // Display a loading message while fetching OR if data is not yet available
   if (loading || !profileData) {
     return <div className="container section"><h2>Loading Artist Profile...</h2></div>;
   }
-
-  // Display an error message if the fetch failed
   if (error) {
     return <div className="container section"><p className="error-message">{error}</p></div>;
   }
 
-  // If we've passed the checks above, profileData is guaranteed to be a valid object.
-  // Now it's safe to destructure.
-  const { artist, artworks, courses, commissionReviews } = profileData;
+  const { artist, artworksForSale, artworksSold, courses, commissionReviews } = profileData;
 
-  // Additional check to ensure artist object exists
   if (!artist) {
     return <div className="container section"><h2>Artist data could not be loaded.</h2></div>;
   }
@@ -83,12 +77,12 @@ const handleContact = () => {
       </header>
 
       <main className="container section">
-        {/* Artworks Section */}
+        {/* --- ARTWORKS FOR SALE SECTION --- */}
         <section className="profile-section">
-          <h2>Artworks for Sale ({artworks?.length || 0})</h2>
-          {artworks && artworks.length > 0 ? (
-            <div className="profile-grid">
-              {artworks.map(art => (
+          <h2>Artworks for Sale ({artworksForSale?.length || 0})</h2>
+          {artworksForSale && artworksForSale.length > 0 ? (
+            <div className="artwork-grid">
+              {artworksForSale.map(art => (
                 <Link to={`/artworks/${art._id}`} key={art._id} className="artwork-card">
                    <div className="artwork-card-image"><img src={art.image} alt={art.title} /></div>
                    <div className="artwork-card-info"><h3>{art.title}</h3><span>${art.price}</span></div>
@@ -98,14 +92,35 @@ const handleContact = () => {
           ) : <p>This artist has no artworks for sale yet.</p>}
         </section>
 
-        {/* Courses Section */}
+        {/* --- SOLD ARTWORKS SECTION --- */}
+        <section className="profile-section">
+          <h2>Portfolio of Sold Works ({artworksSold?.length || 0})</h2>
+           {artworksSold && artworksSold.length > 0 ? (
+            <div className="artwork-grid sold-gallery">
+              {artworksSold.map(art => (
+                // --- FIX #1: Changed from a <div> to a <Link> ---
+                <Link to={`/artworks/${art._id}`} key={art._id} className="artwork-card sold">
+                   <div className="artwork-card-image">
+                        <img src={art.image} alt={art.title} />
+                        <div className="sold-overlay">SOLD</div>
+                   </div>
+                   <div className="artwork-card-info">
+                        <h3>{art.title}</h3>
+                        {/* --- FIX #2: Added the final price --- */}
+                        <span className="sold-price">Sold for ${art.price}</span>
+                   </div>
+                </Link>
+              ))}
+            </div>
+          ) : <p>No sold works to display yet.</p>}
+        </section>
+
+        {/* --- COURSES SECTION --- */}
         <section className="profile-section">
           <h2>Courses ({courses?.length || 0})</h2>
           {courses && courses.length > 0 ? (
-             <div className="profile-grid">
+             <div className="artwork-grid"> {/* Reusing artwork grid style */}
               {courses.map(course => (
-                // We'll treat courses like artworks for display purposes
-                // In a real app, you might create a dedicated CourseCard component
                 <Link to={`/courses/${course._id}`} key={course._id} className="artwork-card">
                    <div className="artwork-card-image">
                         <img src={course.coverImage} alt={course.title} />
@@ -121,7 +136,7 @@ const handleContact = () => {
           ) : <p>This artist has no courses available yet.</p>}
         </section>
 
-        {/* Commission Reviews Section */}
+        {/* --- COMMISSION REVIEWS SECTION --- */}
         <section className="profile-section">
           <h2>Commission Reviews ({commissionReviews?.length || 0})</h2>
           {commissionReviews && commissionReviews.length > 0 ? (
