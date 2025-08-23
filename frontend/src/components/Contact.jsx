@@ -13,7 +13,7 @@ const Contact = () => {
             </p>
             
             <div className="contact-details">
-              <div className="contact-item">
+              <div className="contact-item ci-1">
                 <div className="contact-icon">📧</div>
                 <div className="contact-info">
                   <h4>Email</h4>
@@ -21,7 +21,7 @@ const Contact = () => {
                 </div>
               </div>
               
-              <div className="contact-item">
+              <div className="contact-item ci-2">
                 <div className="contact-icon">📞</div>
                 <div className="contact-info">
                   <h4>Phone</h4>

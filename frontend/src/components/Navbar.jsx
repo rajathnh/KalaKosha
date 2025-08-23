@@ -1,39 +1,62 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Your import for routing
-import { useAuth } from '../context/AuthContext';    // Your import for auth state
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  // --- YOUR LOGIC ---
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
-    setIsMenuOpen(false); // Close menu on logout
-    navigate('/');       // Redirect to home
-  };
-  // --- END YOUR LOGIC ---
-
-
-  // --- TEAMMATE'S LOGIC ---
-  const toggleMenu = () => {
-    setIsMenuOpen(prev => !prev);
-  };
-
-  const scrollToSection = (sectionId) => {
-    // We navigate to the homepage first to ensure the section exists
+    setIsMenuOpen(false);
     navigate('/');
-    setTimeout(() => {
+  };
+
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen(prev => !prev);
+  }, []);
+
+  const handleHomeClick = useCallback(() => {
+    if (user) {
+      if (user.role === 'artist') {
+        navigate('/artist-profile');
+      } else {
+        navigate('/dashboard');
+      }
+    } else {
+      navigate('/');
+      // Small delay to ensure navigation completes before scrolling
+      setTimeout(() => {
+        const element = document.getElementById('home');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+    setIsMenuOpen(false);
+  }, [user, navigate]);
+
+  const scrollToSection = useCallback((sectionId) => {
+    if (location.pathname !== '/') {
+      navigate('/');
+      // Wait for navigation to complete before scrolling
+      setTimeout(() => {
         const element = document.getElementById(sectionId);
         if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+          element.scrollIntoView({ behavior: 'smooth' });
         }
-    }, 100); // Small delay to allow navigation
+      }, 100);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
     setIsMenuOpen(false);
-  };
+  }, [navigate, location.pathname]);
 
   useEffect(() => {
     const onResize = () => {
@@ -44,23 +67,37 @@ const Navbar = () => {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, [isMenuOpen]);
-  // --- END TEAMMATE'S LOGIC ---
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && !event.target.closest('.navbar-container')) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   return (
     <nav className="navbar" role="navigation" aria-label="Main">
       <div className="navbar-container">
         <div className="navbar-left">
-          {/* MERGED: Logo is now a Link to home */}
           <Link to="/" className="navbar-logo">
             <div className="logo-image" aria-hidden="true"></div>
             <div className="logo-text">KalaKosha</div>
           </Link>
 
           <div className="navbar-menu">
-            {/* MERGED: Links now use smart scrolling */}
-            <a href="#home" onClick={() => scrollToSection('home')}>Home</a>
-            <a href="#contact" onClick={() => scrollToSection('contact')}>Contact</a>
-            {/* MERGED: Explore Art is a Link to a separate page */}
+            <button className="nav-link-button" onClick={handleHomeClick}>
+              Home
+            </button>
+            <button className="nav-link-button" onClick={() => scrollToSection('contact')}>
+              Contact
+            </button>
             <Link to="/artworks">Explore Art</Link>
             <Link to="/courses">Courses</Link>
             <Link to="/blog">Blog</Link>
@@ -69,12 +106,9 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-right">
-          {/* MERGED: Your authentication logic is applied here */}
           {user ? (
             <>
-               <Link to="/dashboard" className="navbar-user-link">
-                Hello, {user.name}
-              </Link>
+              <span className="greet">Hello, {user.name}</span>
               <button onClick={handleLogout} className="btn btn-primary navbar-btn">
                 Log Out
               </button>
@@ -91,7 +125,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* TEAMMATE'S IMPROVED HAMBURGER BUTTON */}
         <button
           className={`navbar-mobile-toggle ${isMenuOpen ? 'open' : ''}`}
           onClick={toggleMenu}
@@ -111,17 +144,23 @@ const Navbar = () => {
         className={`navbar-mobile-menu ${isMenuOpen ? 'open' : ''}`}
         aria-hidden={!isMenuOpen}
       >
-        {/* MERGED: Links and buttons are all updated */}
-        <a href="#home" onClick={() => scrollToSection('home')}>Home</a>
-        <a href="#contact" onClick={() => scrollToSection('contact')}>Contact</a>
-        <Link to="/artworks" onClick={() => setIsMenuOpen(false)}>Explore Art</Link>
+        <button className="nav-link-button mobile-nav-item" onClick={handleHomeClick}>
+          Home
+        </button>
+        <button className="nav-link-button mobile-nav-item" onClick={() => scrollToSection('contact')}>
+          Contact
+        </button>
+        <Link to="/artworks" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>Explore Art</Link>
+        <Link to="/courses" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>Courses</Link>
+        <Link to="/blog" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>Blog</Link>
+        <Link to="/forum" className="mobile-nav-item" onClick={() => setIsMenuOpen(false)}>Community</Link>
         <div className="mobile-auth">
           {user ? (
-            <button onClick={handleLogout} className="btn btn-primary">Log Out</button>
+            <button onClick={handleLogout} className="btn btn-primary mobile-auth-btn">Log Out</button>
           ) : (
             <>
-              <Link to="/register" onClick={() => setIsMenuOpen(false)} className="btn btn-outline">Register</Link>
-              <Link to="/login" onClick={() => setIsMenuOpen(false)} className="btn btn-primary">Log in</Link>
+              <Link to="/register" onClick={() => setIsMenuOpen(false)} id="register" className="btn btn-outline mobile-auth-btn">Register</Link>
+              <Link to="/login" onClick={() => setIsMenuOpen(false)} id="login" className="btn btn-primary mobile-auth-btn">Log in</Link>
             </>
           )}
         </div>
