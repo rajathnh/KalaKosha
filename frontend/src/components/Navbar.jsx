@@ -109,7 +109,8 @@ const Navbar = () => {
         <div className="navbar-right">
           {user ? (
             <>
-              <span className="greet">Hello, {user.name}</span>
+              <Link to={user.role === 'artist' ? `/artists/${user.id}` : '/dashboard'} className="greet-link" aria-label="View your profile"><span className="greet">Hello, {user.name}</span>
+              </Link>
               <button onClick={handleLogout} className="btn btn-primary navbar-btn">
                 Log Out
               </button>
