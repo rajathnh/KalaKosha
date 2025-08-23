@@ -1,19 +1,18 @@
 // src/pages/ArtworkListPage.jsx
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import apiClient from '../api/axios';
-import './ArtworkListPage.css'; // We'll create this
+import './ArtworkListPage.css';
 
 const ArtworkListPage = () => {
   const [artworks, setArtworks] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Add state for pagination, filters, etc. later
 
   useEffect(() => {
     const fetchArtworks = async () => {
       try {
         setLoading(true);
-        // Using your powerful API with pagination
         const response = await apiClient.get('/artworks?sort=latest&limit=12');
         setArtworks(response.data.artworks);
       } catch (err) {
@@ -25,28 +24,44 @@ const ArtworkListPage = () => {
     fetchArtworks();
   }, []);
 
-  if (loading) return <div className="container section"><h2>Loading Artworks...</h2></div>;
+  if (loading) {
+    return (
+      <div className="loading-container container section">
+        <div className="spinner"></div>
+        <h2>Loading Artworks...</h2>
+      </div>
+    );
+  }
 
   return (
     <div className="artwork-list-page section">
       <div className="container">
-        <h1 className="page-title">Explore Our Art Gallery</h1>
-        {/* Add filter and sort controls here later */}
+        <div className="page-header text-center">
+          <h1 className="page-title">Explore The Gallery</h1>
+          <p className="page-subtitle">A curated collection of authentic works from India's most talented folk and traditional artists.</p>
+        </div>
+        
+        {/* Filter and sort controls will go here */}
+        
         <div className="artwork-grid">
           {artworks.map(art => (
             <Link to={`/artworks/${art._id}`} key={art._id} className="artwork-card">
-              <div className="artwork-card-image">
+              <div className="artwork-card-image-wrapper">
                 <img src={art.image} alt={art.title} />
               </div>
-              <div className="artwork-card-info">
-                <h3>{art.title}</h3>
-                <p>By {art.artist.name}</p>
-                <span>${art.price}</span>
+              <div className="artwork-card-content">
+                <h3 className="artwork-title">{art.title}</h3>
+                <p className="artwork-artist">By {art.artist.name}</p>
+              </div>
+              <div className="artwork-card-overlay">
+                <span className="artwork-price">${art.price}</span>
+                <div className="artwork-cta">View Details</div>
               </div>
             </Link>
           ))}
         </div>
-        {/* Add pagination buttons here later */}
+        
+        {/* Pagination buttons will go here */}
       </div>
     </div>
   );
