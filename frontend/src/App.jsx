@@ -24,7 +24,8 @@ import SingleCoursePage from './pages/SingleCoursePage';
 import CreateArtworkPage from './pages/CreateArtworkPage';
 import CreateCoursePage from './pages/CreateCoursePage';
 import CreateBlogPage from './pages/CreateBlogPage'; 
-
+import SingleBlogPostPage from './pages/SingleBlogPostPage';
+import BlogListPage from './pages/BlogListPage';
 function App() {
   return (
     <div className="App">
@@ -42,6 +43,8 @@ function App() {
           <Route path="/artists/:id" element={<ArtistProfilePage />} />
           <Route path="/courses" element={<CourseListPage />} />
           <Route path="/courses/:id" element={<SingleCoursePage />} />
+          <Route path="/blog/:id" element={<SingleBlogPostPage />} />
+          <Route path="/blog" element={<BlogListPage />} />
           {/* --- Protected Routes (to be built) --- */}
           <Route 
     path="/checkout/:artworkId" // The URL will contain the ID of the artwork to buy

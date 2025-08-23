@@ -5,7 +5,8 @@ const Course = require('../models/Course');
 const BlogPost = require('../models/BlogPost');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
-
+const CommissionReview = require('../models/CommissionReview');
+const mongoose = require('mongoose');
 // --- GET ALL ARTISTS (Public) ---
 // For a public directory of all artists
 const getAllArtists = async (req, res) => {
@@ -57,8 +58,6 @@ const getAllArtists = async (req, res) => {
     res.status(StatusCodes.OK).json({ artists, count: artists.length, totalArtists, numOfPages });
 };
 
-// --- GET SINGLE ARTIST'S PUBLIC PROFILE (Public) ---
-// This aggregates all content related to a single artist
 const getSingleArtistProfile = async (req, res) => {
   const { id: artistId } = req.params;
 
@@ -68,21 +67,21 @@ const getSingleArtistProfile = async (req, res) => {
     throw new CustomError.NotFoundError(`No artist with id: ${artistId}`);
   }
 
-  // 2. Use Promise.all to fetch all related content in parallel for performance
+  // --- THIS IS THE KEY FIX ---
+  // We explicitly convert the artistId string to a Mongoose ObjectId before querying.
+  // This removes any ambiguity and ensures the query is correct.
+  const artistObjectId = new mongoose.Types.ObjectId(artistId);
+
+  // 2. Use Promise.all to fetch all related content in parallel
+  const artworksForSalePromise = Artwork.find({ artist: artistObjectId, status: 'For Sale' });
+  const artworksSoldPromise = Artwork.find({ artist: artistObjectId, status: 'Sold' });
+  // --- END OF FIX ---
   
-  // --- THIS IS THE KEY CHANGE ---
-  // Fetch artworks for sale
-  const artworksForSalePromise = Artwork.find({ artist: artistId, status: 'For Sale' });
-  // Fetch sold artworks
-  const artworksSoldPromise = Artwork.find({ artist: artistId, status: 'Sold' });
-  // --- END OF CHANGE ---
-  
-  const coursesPromise = Course.find({ artist: artistId });
-  const commissionReviewsPromise = CommissionReview.find({ artist: artistId })
+  const coursesPromise = Course.find({ artist: artistObjectId });
+  const commissionReviewsPromise = CommissionReview.find({ artist: artistObjectId })
         .populate({ path: 'customer', select: 'name' })
         .populate({ path: 'commission', select: 'title price' });
 
-  // Add the new promises to the Promise.all call
   const [artworksForSale, artworksSold, courses, commissionReviews] = await Promise.all([
     artworksForSalePromise,
     artworksSoldPromise,
@@ -93,15 +92,14 @@ const getSingleArtistProfile = async (req, res) => {
   // 3. Combine everything into a single response object
   const profileData = {
     artist,
-    artworksForSale, // Now a separate array
-    artworksSold,    // Now a separate array
+    artworksForSale,
+    artworksSold,
     courses,
     commissionReviews,
   };
 
   res.status(StatusCodes.OK).json({ profile: profileData });
 };
-
 module.exports = {
   getAllArtists,
   getSingleArtistProfile,

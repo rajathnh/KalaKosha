@@ -46,7 +46,7 @@ const MyArtworksPanel = () => {
       {artworks.length > 0 ? (
         <div className="artwork-grid">
           {artworks.map((art) => (
-            <div key={art._id} className={`artwork-card ${art.status === 'Sold' ? 'sold' : ''}`}>
+           <Link to={`/artworks/${art._id}`} key={art._id} className={`artwork-card ${art.status === 'Sold' ? 'sold' : ''}`}>
               <div className="artwork-card-image">
                 <img src={art.image} alt={art.title} />
                 {art.status === 'Sold' && <div className="sold-overlay">SOLD</div>}
@@ -55,10 +55,11 @@ const MyArtworksPanel = () => {
                 <h3>{art.title}</h3>
                 <p>Status: <strong>{art.status}</strong></p>
               </div>
-            </div>
-          ))}
+            </Link>
+            ))}
         </div>
       ) : (
+     
         <p>You haven't uploaded any artworks yet. Click the button above to add your first piece!</p>
       )}
     </div>
