@@ -111,15 +111,43 @@
   }
   
   .contact-item {
-    justify-content: center;
+    justify-content: flex-start;
+    margin-left:1rem;
   }
   
+.contact-info{
+  display:flex;
+  flex-direction: column;
+  align-items: flex-start;  
+  justify-content: center;
+}
+
+.contact-info p{
+  text-align: left;
+}
+
   .contact-actions {
     justify-content: center;
   }
   
   .contact-image {
     max-width: 300px;
+  }
+}
+
+@media (min-width: 400px) and (max-width: 768px) {
+  .contact-details{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .ci-1{
+    position:relative;
+    right:38px;
+  }
+    .ci-2{
+    position:relative;
+    right:50px;
   }
 }
 
