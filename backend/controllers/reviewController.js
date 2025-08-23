@@ -8,6 +8,7 @@ const { checkPermissions } = require('../utils');
 const Order = require('../models/Order');
 const OrderItem = require('../models/OrderItem');
 const mongoose = require('mongoose');
+const { createNotification } = require('../utils/notificationUtils');
 // Helper to update the average rating on a product
 const updateAverageRating = async (modelName, reviewableId) => {
     const Model = mongoose.model(modelName);
@@ -77,7 +78,15 @@ const createReview = async (req, res) => {
     const review = await Review.create(req.body);
 
     await updateAverageRating(onModel, reviewableId);
-
+    const product = await mongoose.model(onModel).findById(reviewableId);
+    if (product && product.artist) {
+        await createNotification(
+            product.artist,
+            'Artist',
+            `${req.user.name} left a review on your ${onModel.toLowerCase()} "${product.title}".`,
+            `/${onModel.toLowerCase()}s/${reviewableId}`
+        );
+    }
     res.status(StatusCodes.CREATED).json({ review });
 };
 // --- GET ALL REVIEWS FOR A SPECIFIC ITEM ---

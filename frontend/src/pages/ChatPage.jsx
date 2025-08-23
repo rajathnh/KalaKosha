@@ -22,8 +22,11 @@ const ChatPage = () => {
     const [pageLoading, setPageLoading] = useState(true);
     const [error, setError] = useState(null);
     const messagesEndRef = useRef(null);
+    const messagesContainerRef = useRef(null);
     const fileInputRef = useRef(null);
-const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [userJustSentMessage, setUserJustSentMessage] = useState(false);
+
     // --- DATA FETCHING FUNCTIONS ---
     const fetchCommissions = useCallback(async () => {
         if (!conversationId) return;
@@ -40,9 +43,10 @@ const [isInitialLoad, setIsInitialLoad] = useState(true);
         try {
             const response = await apiClient.get(`/chat/conversations/${conversationId}/messages`);
             setMessages(response.data.messages || []);
-        } catch (err) { console.error('Polling messages failed:', err); }
+        } catch (err) { 
+            console.error('Polling messages failed:', err); 
+        }
     }, [conversationId]);
-
 
     // --- EFFECTS ---
 
@@ -79,36 +83,39 @@ const [isInitialLoad, setIsInitialLoad] = useState(true);
     // 2. Set up polling for new messages and commissions
     useEffect(() => {
         if (!conversationId) return;
+        
         // Fetch immediately when conversation starts
         fetchMessages();
         fetchCommissions();
+        
         // Then set up the interval to poll every 5 seconds
         const interval = setInterval(() => {
             fetchMessages();
             fetchCommissions();
         }, 5000);
+        
         // Clean up the interval when the component unmounts
         return () => clearInterval(interval);
     }, [conversationId, fetchMessages, fetchCommissions]);
 
-
-    // --- START OF THE SCROLLING FIX ---
-
-    // 3. Smart Initial Scroll Effect
-    // This effect runs ONLY ONCE when the conversation ID is first available.
+    // 3. Handle scrolling - only scroll to bottom on initial load or after user sends message
     useEffect(() => {
-        // --- NEW FIX PART 3: This condition is now much smarter ---
-        // Scroll to bottom ONLY if it's the very first load OR if a new message has arrived.
-        // We check the length of messages to see if it changed.
-        if (!isInitialLoad) {
-             messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        const container = messagesContainerRef.current;
+        const messagesEnd = messagesEndRef.current;
+        
+        if (!container || !messagesEnd) return;
+
+        // Only scroll in these specific cases:
+        if (isInitialLoad && messages.length > 0) {
+            // Initial load - scroll to bottom to show latest messages
+            container.scrollTop = container.scrollHeight;
+            setIsInitialLoad(false);
+        } else if (userJustSentMessage) {
+            // User just sent a message - scroll to show their new message
+            container.scrollTop = container.scrollHeight;
+            setUserJustSentMessage(false);
         }
-    }, [messages.length, isInitialLoad]);
-
-    // The old auto-scroll useEffect that caused the bug has been completely removed.
-    
-    // --- END OF THE SCROLLING FIX ---
-
+    }, [messages, commissions, isInitialLoad, userJustSentMessage]);
 
     // --- HANDLER FUNCTIONS ---
     const handleFileChange = (e) => setImageFile(e.target.files[0]);
@@ -130,9 +137,9 @@ const [isInitialLoad, setIsInitialLoad] = useState(true);
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
             
-            // --- FIX PART 2: Manually trigger scroll after sending ---
-            await fetchMessages(); // Instantly get the message we just sent
-            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); // Scroll down smoothly
+            // Mark that user just sent a message so we can scroll to show it
+            setUserJustSentMessage(true);
+            await fetchMessages();
         } catch (err) { 
             console.error('Failed to send message', err); 
         }
@@ -190,7 +197,7 @@ const [isInitialLoad, setIsInitialLoad] = useState(true);
                             </>
                         )}
                     </div>
-                    <div className="chat-messages-container">
+                    <div className="chat-messages-container" ref={messagesContainerRef}>
                         {chatFeed.length > 0 ? (
                             chatFeed.map((item) => {
                                 if (item.status && item.status === 'Offered' && user.role !== 'artist') {

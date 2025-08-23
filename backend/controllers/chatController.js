@@ -5,6 +5,7 @@ const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
+const { createNotification } = require('../utils/notificationUtils');
 // --- START a conversation or GET existing one ---
 const getOrCreateConversation = async (req, res) => {
     const { recipientId, recipientModel } = req.body; // e.g., Artist's ID
@@ -66,6 +67,20 @@ const sendMessage = async (req, res) => {
         content: content || '', // Ensure content is at least an empty string if not provided
         imageUrl,
     });
+    const conversation = await Conversation.findById(conversationId);
+  if (conversation) {
+    const recipient = conversation.participants.find(p => p.toString() !== req.user.userId);
+    const recipientModelInfo = conversation.participantModels.find((m, i) => conversation.participants[i].toString() === recipient.toString());
+    
+    if (recipient && recipientModelInfo) {
+      await createNotification(
+        recipient,
+        recipientModelInfo,
+        `${req.user.name} sent you a message.`,
+        `/chat/${req.user.userId}`
+      );
+    }
+}
 
     res.status(StatusCodes.CREATED).json({ message });
 };

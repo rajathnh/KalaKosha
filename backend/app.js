@@ -42,6 +42,7 @@ const commentRouter = require('./routes/commentRoutes');
 const enrollmentRouter = require('./routes/enrollmentRoutes');
 const forumRouter = require('./routes/forumRoutes');
 const eventRouter = require('./routes/eventRoutes'); 
+const notificationRouter = require('./routes/notificationRoutes');
 
 // --- Middleware Imports ---
 const notFoundMiddleware = require("./middleware/not-found");
@@ -96,6 +97,7 @@ app.use('/api/v1/comments', commentRouter);
 app.use('/api/v1/enrollments', enrollmentRouter);
 app.use('/api/v1/forum', forumRouter);
 app.use('/api/v1/events', eventRouter);
+app.use('/api/v1/notifications', notificationRouter);
 // --- Custom Error Handling Middleware (must be last) ---
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

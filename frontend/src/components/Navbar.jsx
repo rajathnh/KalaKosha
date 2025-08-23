@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Navbar.css';
-
+import NotificationBell from './NotificationBell';
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logout } = useAuth();
@@ -109,7 +109,7 @@ const Navbar = () => {
 
         <div className="navbar-right">
           {user ? (
-            <>
+            <><NotificationBell />
               <Link to={user.role === 'artist' ? `/artists/${user.id}` : '/dashboard'} className="greet-link" aria-label="View your profile"><span className="greet">Hello, {user.name}</span>
               </Link>
               <button onClick={handleLogout} className="btn btn-primary navbar-btn">
