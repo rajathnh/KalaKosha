@@ -16,14 +16,31 @@ const attachCookiesToResponse = ({ res, user }) => {
 
   const oneDay = 1000 * 60 * 60 * 24;
 
-  res.cookie('token', token, {
+  // --- START OF THE FIX ---
+
+  // 1. Define the base cookie options
+  const cookieOptions = {
     httpOnly: true,
     expires: new Date(Date.now() + oneDay),
-    secure: process.env.NODE_ENV === 'production',
     signed: true,
-    sameSite: 'none',
-  });
+  };
+
+  // 2. If in production, add the specific cross-domain settings
+  if (process.env.NODE_ENV === 'production') {
+    cookieOptions.secure = true;
+    cookieOptions.sameSite = 'none';
+  } else {
+    // For development (e.g., localhost), 'lax' is more appropriate
+    // and works without HTTPS.
+    cookieOptions.sameSite = 'lax';
+  }
+
+  // 3. Set the cookie with the determined options
+  res.cookie('token', token, cookieOptions);
+
+  // --- END OF THE FIX ---
 };
+
 
 module.exports = {
   createJWT,
