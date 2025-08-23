@@ -3,17 +3,18 @@
 /* --- Main Layout --- */
 .profile-layout {
   display: grid;
-  grid-template-columns: 380px 1fr; /* Sidebar width and main content */
+  grid-template-columns: 440px 1fr; /* Sidebar width and main content */
   gap: 4rem;
   align-items: flex-start; /* Aligns items to the top */
+  /* Remove any overflow so sticky works */
 }
 
 /* --- Left "Sticky" Sidebar --- */
 .profile-sidebar {
   position: -webkit-sticky; /* For Safari */
   position: sticky;
-  top: 120px; /* 80px for navbar + 40px margin */
-  max-height: calc(100vh - 140px);
+  top: 100px; /* 80px for navbar + 40px margin */
+  max-height: calc(100vh - 120px);
   overflow-y: auto;  
   border-radius: 15px;
 
@@ -21,7 +22,8 @@
 
 .sidebar-content {
   background: white;
-  padding: 2rem 2rem 3rem;
+  padding: 2.5rem 2.5rem 3.5rem;
+  font-size: 1.15rem;
   border-radius: 15px;
   box-shadow: var(--shadow-medium);
   text-align: center;
@@ -40,14 +42,14 @@
 }
 
 .artist-name {
-  font-size: 2.2rem;
+  font-size: 2.6rem;
   margin-bottom: 0.5rem;
   color: var(--text-dark);
 }
 
 .artist-badges-container {
   margin-bottom: 1rem;
-  min-height: 35px;
+  min-height: 48px;
 }
 
 .artist-specialization {
@@ -61,10 +63,10 @@
   display: inline-block;
   background: var(--footer-bg);
   color: var(--text-dark);
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
+  padding: 0.6rem 1.6rem;
+  border-radius: 28px;
   margin-bottom: 1.5rem;
-  font-size: 0.9rem;
+  font-size: 1.15rem;
 }
 
 .artist-bio {
@@ -77,11 +79,17 @@
 
 .contact-btn {
   width: 100%; /* Make the button full-width */
+  font-size: 1.25rem;
+  padding: 1.1rem 0;
+  border-radius: 32px;
+  font-weight: 600;
 }
 
 /* --- Right Main Content --- */
 .profile-main-content {
   min-width: 0; /* Prevents grid blowout */
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
 }
 
 .profile-section {
