@@ -7,7 +7,31 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const { checkPermissions } = require('../utils');
 const mongoose = require('mongoose');
+
+const checkAndSetVerifiedBadge = async (artistId) => {
+  try {
+    // 1. Count how many artworks this artist has.
+    const artworkCount = await Artwork.countDocuments({ artist: artistId });
+
+    // 2. Determine if the artist should be verified.
+    const shouldBeVerified = artworkCount >= 3;
+
+    // 3. Update the artist's profile with the new status.
+    await Artist.findOneAndUpdate(
+      { _id: artistId },
+      { isVerified: shouldBeVerified }
+    );
+    
+    console.log(`Verification check for artist ${artistId}: ${artworkCount} artworks. Verified status set to: ${shouldBeVerified}`);
+  } catch (error) {
+    // Log the error but don't crash the main request.
+    // This is a background task, so it shouldn't block the user's action.
+    console.error('Error updating artist verification status:', error);
+  }
+};
 // --- CREATE ARTWORK (Artist only) ---
+
+
 const createArtwork = async (req, res) => {
   // The artist's ID is attached to the request by our authentication middleware
   req.body.artist = req.user.userId;
@@ -27,6 +51,7 @@ const createArtwork = async (req, res) => {
   req.body.image = result.secure_url;
 
   const artwork = await Artwork.create(req.body);
+  await checkAndSetVerifiedBadge(req.user.userId);
   res.status(StatusCodes.CREATED).json({ artwork });
 };
 
@@ -129,8 +154,9 @@ const deleteArtwork = async (req, res) => {
   
   // Check Permissions
   checkPermissions(req.user, artwork.artist);
-  
+  const artistId = artwork.artist;
   await artwork.deleteOne(); // Mongoose V6+
+  await checkAndSetVerifiedBadge(artistId);
   res.status(StatusCodes.OK).json({ msg: 'Success! Artwork removed.' });
 };
 const getCurrentArtistArtworks = async (req, res) => {

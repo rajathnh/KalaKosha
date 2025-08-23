@@ -9,6 +9,28 @@ const CommissionReview = require('../models/CommissionReview');
 const mongoose = require('mongoose');
 // --- GET ALL ARTISTS (Public) ---
 // For a public directory of all artists
+
+const checkAndSetVerifiedBadge = async (artistId) => {
+  try {
+    // 1. Count how many artworks this artist has.
+    const artworkCount = await Artwork.countDocuments({ artist: artistId });
+
+    // 2. Determine if the artist should be verified.
+    const shouldBeVerified = artworkCount >= 3;
+
+    // 3. Update the artist's profile with the new status.
+    await Artist.findOneAndUpdate(
+      { _id: artistId },
+      { isVerified: shouldBeVerified }
+    );
+    
+    console.log(`Verification check for artist ${artistId}: ${artworkCount} artworks. Verified status set to: ${shouldBeVerified}`);
+  } catch (error) {
+    // Log the error but don't crash the main request.
+    // This is a background task, so it shouldn't block the user's action.
+    console.error('Error updating artist verification status:', error);
+  }
+};
 const getAllArtists = async (req, res) => {
     const { search, specialization, sort } = req.query;
 

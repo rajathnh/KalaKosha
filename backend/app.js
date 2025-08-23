@@ -40,7 +40,7 @@ const commissionReviewRouter = require('./routes/commissionReviewRoutes');
 const orderRouter = require('./routes/orderRoutes');
 const commentRouter = require('./routes/commentRoutes');
 const enrollmentRouter = require('./routes/enrollmentRoutes');
-
+const forumRouter = require('./routes/forumRoutes');
 
 
 // --- Middleware Imports ---
@@ -94,7 +94,7 @@ app.use('/api/v1/commission-reviews', commissionReviewRouter);
 app.use('/api/v1/orders', orderRouter);
 app.use('/api/v1/comments', commentRouter);
 app.use('/api/v1/enrollments', enrollmentRouter);
-
+app.use('/api/v1/forum', forumRouter);
 // --- Custom Error Handling Middleware (must be last) ---
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);

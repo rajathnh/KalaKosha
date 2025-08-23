@@ -64,6 +64,7 @@ const Navbar = () => {
             <Link to="/artworks">Explore Art</Link>
             <Link to="/courses">Courses</Link>
             <Link to="/blog">Blog</Link>
+            <Link to="/forum">Community</Link>
           </div>
         </div>
 
