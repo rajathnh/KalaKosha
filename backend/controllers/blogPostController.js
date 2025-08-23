@@ -5,7 +5,7 @@ const CustomError = require('../errors');
 const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const { checkPermissions } = require('../utils');
-
+const { updateArtistBadges } = require('../utils/badgeUtils');
 // --- CREATE BLOG POST (Artist only) ---
 const createBlogPost = async (req, res) => {
   req.body.artist = req.user.userId;
@@ -29,6 +29,7 @@ const createBlogPost = async (req, res) => {
   }
 
   const blogPost = await BlogPost.create(req.body);
+  await updateArtistBadges(req.user.userId);
   res.status(StatusCodes.CREATED).json({ blogPost });
 };
 
@@ -129,6 +130,7 @@ const deleteBlogPost = async (req, res) => {
   checkPermissions(req.user, blogPost.artist);
   
   await blogPost.deleteOne();
+  await updateArtistBadges(req.user.userId);
   res.status(StatusCodes.OK).json({ msg: 'Success! Blog post removed.' });
 };
 const getCurrentArtistBlogs = async (req, res) => {

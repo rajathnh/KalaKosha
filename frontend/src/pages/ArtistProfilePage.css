@@ -63,5 +63,15 @@
   margin-top: 1rem;
   align-self: flex-end;
 }
+
+.artist-header h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem; /* Reduce margin to bring badges closer */
+}
+
+.artist-badges-container {
+    margin-bottom: 1rem;
+    min-height: 25px; /* Prevents layout shift if there are no badges */
+}
 /* We can reuse the artwork-card and review-card styles from other pages */
 /* If you want to keep CSS separate, copy those styles here */

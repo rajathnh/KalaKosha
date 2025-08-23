@@ -5,7 +5,7 @@ import apiClient from '../api/axios';
 import './ArtistProfilePage.css';
 // Reusing these styles for the cards
 import './ArtworkListPage.css'; 
-
+import Badge from '../components/Badge';
 const ArtistProfilePage = () => {
   const { id: artistId } = useParams();
   const [profileData, setProfileData] = useState(null);
@@ -64,6 +64,11 @@ const ArtistProfilePage = () => {
         <div className="container">
           <img src={artist.profilePicture} alt={artist.name} className="artist-avatar" />
           <h1>{artist.name}</h1>
+          <div className="artist-badges-container">
+            <Badge type="artwork" tier={artist.artworkBadgeTier} />
+            <Badge type="course" tier={artist.courseBadgeTier} />
+            <Badge type="blog" tier={artist.blogBadgeTier} />
+          </div>
           <p className="artist-specialization">{artist.specialization.join(', ')}</p>
           <div className="artist-rating">
             <span>⭐ {artist.averageRating ? artist.averageRating.toFixed(1) : 'N/A'}</span> 

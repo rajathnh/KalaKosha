@@ -55,9 +55,23 @@ const ArtistSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
+        artworkBadgeTier: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 3,
+    },
+    courseBadgeTier: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 3,
+    },
+    blogBadgeTier: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 3,
     },
     averageRating: {
   type: Number,

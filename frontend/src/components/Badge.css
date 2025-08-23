@@ -1,0 +1,14 @@
+/* src/components/Badge.css */
+.artist-badge {
+  display: inline-block;
+  color: #2c2c2c; /* Dark text for better contrast on light badge colors */
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  border-radius: 15px;
+  margin: 0 5px 5px 0; /* Allow badges to wrap nicely */
+  vertical-align: middle;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+  cursor: help; /* Indicates the title tooltip on hover */
+}

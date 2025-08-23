@@ -7,7 +7,7 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const { checkPermissions } = require('../utils');
 const mongoose = require('mongoose');
-
+const { updateArtistBadges } = require('../utils/badgeUtils');
 const checkAndSetVerifiedBadge = async (artistId) => {
   try {
     // 1. Count how many artworks this artist has.
@@ -51,7 +51,7 @@ const createArtwork = async (req, res) => {
   req.body.image = result.secure_url;
 
   const artwork = await Artwork.create(req.body);
-  await checkAndSetVerifiedBadge(req.user.userId);
+  await updateArtistBadges(req.user.userId);
   res.status(StatusCodes.CREATED).json({ artwork });
 };
 
@@ -156,7 +156,7 @@ const deleteArtwork = async (req, res) => {
   checkPermissions(req.user, artwork.artist);
   const artistId = artwork.artist;
   await artwork.deleteOne(); // Mongoose V6+
-  await checkAndSetVerifiedBadge(artistId);
+  await updateArtistBadges(req.user.userId);
   res.status(StatusCodes.OK).json({ msg: 'Success! Artwork removed.' });
 };
 const getCurrentArtistArtworks = async (req, res) => {
