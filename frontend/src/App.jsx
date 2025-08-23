@@ -64,7 +64,7 @@ function App() {
           <Route path="/forum" element={<CommunityForumPage />} />
           {/* --- Protected Routes (to be built) --- */}
           <Route 
-            path="/checkout/:artworkId" // The URL will contain the ID of the artwork to buy
+            path="/checkout/artwork/:artworkId" // The URL will contain the ID of the artwork to buy
             element={
               <ProtectedRoute>
                 <CheckoutPage />
