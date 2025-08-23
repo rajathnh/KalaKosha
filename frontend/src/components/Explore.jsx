@@ -1,8 +1,11 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // <-- Import Link
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Explore.css';
 
 const Explore = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const exploreCards = [
     { id: 1, title: "Marketplace for Art Enthusiasts and Creators", image: '/explore1.jpg' },
     { id: 2, title: "Learn About Indian Folk Art Traditions", image: '/explore2.jpg' },
@@ -18,7 +21,6 @@ const Explore = () => {
         
         <div className="explore-cards">
           {exploreCards.map((card) => {
-            // If it's the second card, wrap it in a Link
             if (card.id === 2) {
               return (
                 <Link to="/discover" key={card.id} className="explore-card-link">
@@ -31,7 +33,40 @@ const Explore = () => {
                 </Link>
               );
             }
-            // Render other cards normally
+
+            if (card.id === 1) {
+              return (
+                <Link to="/artworks" key={card.id} className="explore-card-link">
+                  <div className="explore-card">
+                    <div className="explore-card-image">
+                      <img src={card.image} alt={card.title} />
+                    </div>
+                    <h3 className="explore-card-title">{card.title}</h3>
+                  </div>
+                </Link>
+              );
+            }
+
+            // Card 3: Showcase Your Art to a Wider Audience
+            if (card.id === 3) {
+              return (
+                <div key={card.id} className="explore-card explore-card-link" style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    // Check if user is an artist (adjust property as per your backend, e.g. user.type === 'artist' or user.isArtist)
+                    if (user && (user.type === 'artist' || user.isArtist)) {
+                      navigate(`/artist/${user._id}`);
+                    } else {
+                      window.alert('To showcase your art, please create an account as an artist.');
+                    }
+                  }}>
+                  <div className="explore-card-image">
+                    <img src={card.image} alt={card.title} />
+                  </div>
+                  <h3 className="explore-card-title">{card.title}</h3>
+                </div>
+              );
+            }
+
             return (
               <div key={card.id} className="explore-card">
                 <div className="explore-card-image">

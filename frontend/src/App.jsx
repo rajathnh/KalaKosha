@@ -1,10 +1,12 @@
 // src/App.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import ScrollToTop from './components/ScrollToTop';
 
 // Layout Components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+
 
 // Page Components
 import HomePage from './pages/HomePage';
@@ -35,6 +37,7 @@ import ArtFormDetailPage from './pages/ArtFormDetailPage';
 function App() {
   return (
     <div className="App">
+       <ScrollToTop /> {}
       <Navbar />
       <main style={{ paddingTop: '80px' }}> {/* Add padding to prevent content from hiding under the fixed navbar */}
         <Routes>
