@@ -74,6 +74,13 @@ const ArtistProfilePage = () => {
               <Badge type="course" tier={artist.courseBadgeTier} />
               <Badge type="blog" tier={artist.blogBadgeTier} />
             </div>
+            <div className="sidebar-section-header">
+      <h4>Achievements</h4>
+      <Link to="/badge-system" className="learn-more-link" aria-label="Learn more about our badge system">
+        ?
+      </Link>
+    </div>
+
             <p className="artist-specialization">{artist.specialization.join(', ')}</p>
             <div className="artist-rating">
               <span>⭐ {artist.averageRating ? artist.averageRating.toFixed(1) : 'N/A'}</span> 

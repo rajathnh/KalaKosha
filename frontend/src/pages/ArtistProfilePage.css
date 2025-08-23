@@ -223,3 +223,40 @@
     margin-top: 0; /* Reset avatar position */
   }
 }
+
+/* Add this to the end of ArtistProfilePage.css */
+
+.sidebar-section-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.sidebar-section-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-dark);
+}
+
+.learn-more-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--footer-bg);
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.learn-more-link:hover {
+  background: var(--accent-color);
+  color: white;
+  transform: scale(1.1);
+}
