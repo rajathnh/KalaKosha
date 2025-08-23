@@ -32,6 +32,10 @@
   gap: 1.5rem;
 }
 
+.settings-form{
+  margin-top:32px;
+}
+
 .form-group {
   text-align: left;
 }

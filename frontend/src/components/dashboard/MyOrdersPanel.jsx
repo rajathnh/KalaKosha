@@ -30,7 +30,7 @@ const MyOrdersPanel = () => {
     <div className="my-orders-panel">
       <h2>My Artwork Orders</h2>
       <p>A collection of all the unique artworks you have purchased.</p>
-      <hr />
+  <hr className="message1"/>
       {purchasedArtworks.length > 0 ? (
         <div className="artwork-grid">
           {purchasedArtworks.map(({ product }) => (
