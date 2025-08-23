@@ -69,17 +69,18 @@ const ArtistProfilePage = () => {
           <div className="sidebar-content">
             <img src={artist.profilePicture} alt={artist.name} className="artist-avatar" />
             <h1 className="artist-name">{artist.name}</h1>
+            <div className="sidebar-section-header">
+      <h3>Achievements</h3>
+      <Link to="/badge-system" className="learn-more-link" aria-label="Learn more about our badge system">
+        ?
+      </Link>
+    </div>
             <div className="artist-badges-container">
               <Badge type="artwork" tier={artist.artworkBadgeTier} />
               <Badge type="course" tier={artist.courseBadgeTier} />
               <Badge type="blog" tier={artist.blogBadgeTier} />
             </div>
-            <div className="sidebar-section-header">
-      <h4>Achievements</h4>
-      <Link to="/badge-system" className="learn-more-link" aria-label="Learn more about our badge system">
-        ?
-      </Link>
-    </div>
+            
 
             <p className="artist-specialization">{artist.specialization.join(', ')}</p>
             <div className="artist-rating">
