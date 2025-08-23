@@ -41,27 +41,40 @@ const ConversationList = () => {
   if (error) {
     return <p style={{ color: 'red' }}>{error}</p>;
   }
+  const uniqueConversations = new Map();
+
+  conversations.forEach(convo => {
+    if (convo.participants && Array.isArray(convo.participants)) {
+      // Create a unique key by sorting the participant IDs and joining them.
+      // This ensures that a chat between UserA-UserB and UserB-UserA are treated as the same.
+      const conversationKey = convo.participants
+        .map(p => p._id)
+        .sort()
+        .join('-');
+
+      // If we haven't seen this key before, add the conversation to our map.
+      if (!uniqueConversations.has(conversationKey)) {
+        uniqueConversations.set(conversationKey, convo);
+      }
+    }
+  });
+
+  // Convert the Map back to an array to render it.
+  const filteredConversations = Array.from(uniqueConversations.values());
 
   return (
     <div className="conversation-list">
       <h3>My Messages</h3>
-      {conversations.length > 0 ? (
+      {/* --- USE THE NEW `filteredConversations` ARRAY --- */}
+      {filteredConversations.length > 0 ? (
         <ul className="conversation-items">
-          {conversations.map(convo => {
-            // Defensive check: Ensure participants array exists and is an array
-            if (!convo.participants || !Array.isArray(convo.participants)) {
-              return null;
-            }
-            
-            // Find the other person in the chat
+          {filteredConversations.map(convo => {
             const otherParticipant = convo.participants.find(p => p && p._id !== user.userId);
 
-            // Defensive check: Ensure the other participant was found
             if (!otherParticipant) {
               return null;
             }
 
-            // The data we'll pass to the ChatPage upon navigation
             const linkState = { recipient: otherParticipant };
 
             return (
@@ -76,7 +89,6 @@ const ConversationList = () => {
                     <span className="conversation-name">
                       {otherParticipant.name}
                     </span>
-                    {/* You can add a placeholder for the last message later */}
                     <span className="conversation-preview">
                       Click to view conversation...
                     </span>

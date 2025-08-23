@@ -11,11 +11,15 @@ const getOrCreateConversation = async (req, res) => {
     const { recipientId, recipientModel } = req.body; // e.g., Artist's ID
     const senderId = req.user.userId;
     const senderModel = req.user.role === 'artist' ? 'Artist' : 'User';
+    const participantsArray = [senderId, recipientId].sort();
 
-    // Find if a conversation already exists with these two participants
-    const conversation = await Conversation.findOne({
-        participants: { $all: [senderId, recipientId] },
+    // Find if a conversation already exists with these two participants.
+    // The `$all` operator is good, but querying with the sorted array is even more direct.
+    let conversation = await Conversation.findOne({
+        participants: participantsArray,
     });
+    // Find if a conversation already exists with these two participants
+    
 
     if (conversation) {
         return res.status(StatusCodes.OK).json({ conversation });
