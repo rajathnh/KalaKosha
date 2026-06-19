@@ -60,7 +60,7 @@ if (process.env.NODE_ENV === "development") {
 app.use(helmet());
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 //app.use(mongoSanitize());
-
+console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
 // Rate Limiting to prevent brute-force attacks
 app.use(
   rateLimiter({
